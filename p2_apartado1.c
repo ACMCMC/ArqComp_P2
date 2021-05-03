@@ -5,6 +5,58 @@
 
 #define NUM_COLS 8
 
+static unsigned cyc_hi = 0;
+static unsigned cyc_lo = 0;
+/* Set *hi and *lo to the high and low order bits of the cycle counter.
+ Implementation requires assembly code to use the rdtsc instruction. */
+void access_counter(unsigned *hi, unsigned *lo)
+{
+    asm("rdtsc; movl %%edx,%0; movl %%eax,%1" /* Read cycle counter */
+        : "=r"(*hi), "=r"(*lo)                /* and move results to */
+        : /* No input */                      /* the two outputs */
+        : "%edx", "%eax");
+}
+
+/* Record the current value of the cycle counter. */
+void start_counter()
+{
+    access_counter(&cyc_hi, &cyc_lo);
+}
+
+/* Return the number of cycles since the last call to start_counter. */
+double get_counter()
+{
+    unsigned ncyc_hi, ncyc_lo;
+    unsigned hi, lo, borrow;
+    double result;
+
+    /* Get cycle counter */
+    access_counter(&ncyc_hi, &ncyc_lo);
+
+    /* Do double precision subtraction */
+    lo = ncyc_lo - cyc_lo;
+    borrow = lo > ncyc_lo;
+    hi = ncyc_hi - cyc_hi - borrow;
+    result = (double)hi * (1 << 30) * 4 + lo;
+    if (result < 0)
+    {
+        fprintf(stderr, "Error: counter returns neg value: %.0f\n", result);
+    }
+    return result;
+}
+
+void escribir_resultado(int id_prueba, int N, double tiempo)
+{
+    FILE *fp;
+
+    fp = fopen("medidas_1.csv", "a");
+    if (fp)
+    {
+        fprintf(fp, "%d,%d,%lf\n", id_prueba, N, tiempo);
+        fclose(fp);
+    }
+}
+
 double getElementoAleatorio()
 {
     return ((double)rand() / RAND_MAX);
@@ -13,11 +65,11 @@ double getElementoAleatorio()
 int main(int argc, char **argv)
 {
     unsigned int N, id_prueba, i, j, k, *ind, swap, swap_i;
-    double **a, **b, *c, **d, f, *e;
+    double **a, **b, *c, **d, *e, f, tiempo;
 
     if (argc != 3)
     {
-        fprintf(stderr, "Formato del comando: %s [N] [ID de prueba]", argv[0]);
+        fprintf(stderr, "Formato del comando: %s [N] [ID de prueba]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -65,9 +117,11 @@ int main(int argc, char **argv)
         d[i] = malloc(sizeof(double) * N);
         for (j = 0; j < N; j++)
         {
-            d[N][N] = 0;
+            d[i][j] = 0;
         }
     }
+
+    start_counter(); // Iniciamos el contador
 
     // Bucle del PDF
     for (i = 0; i < N; i++)
@@ -101,4 +155,29 @@ int main(int argc, char **argv)
         e[i] = d[ind[i]][ind[i]] / 2;
         f += e[i];
     }
+
+    tiempo = get_counter();
+
+    printf("Valor de f: %f\n", f);
+
+    escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
+
+    for (i = 0; i < N; i++)
+    {
+        free(a[i]);
+        free(d[i]);
+    }
+    for (i = 0; i < NUM_COLS; i++)
+    {
+        free(b[i]);
+    }
+    
+    free(a);
+    free(b);
+    free(c);
+    free(d);
+    free(e);
+    free(ind);
+
+    exit(EXIT_SUCCESS);
 }
