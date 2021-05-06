@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <pmmintrin.h>
 #include <time.h>
+#include <immintrin.h>
 
 #define NUM_COLS 8
 
