@@ -48,10 +48,11 @@ void _printMat(double** m, int filas, int cols) {
     for (int i = 0; i < filas; i++) {
         printf("( ");
         for (int j = 0; j < cols; j++) {
-            printf("%5lf,", m[i][j]);
+            printf("%5.0lf,", m[i][j]);
         }
         printf(") \n");
     }
+    printf("\n");
 }
 
 void escribir_resultado(int id_prueba, int N, double tiempo)
