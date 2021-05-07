@@ -44,6 +44,16 @@ double get_counter()
     return result;
 }
 
+void _printMat(double** m, int filas, int cols) {
+    for (int i = 0; i < filas; i++) {
+        printf("( ");
+        for (int j = 0; j < cols; j++) {
+            printf("%5lf,", m[i][j]);
+        }
+        printf(") \n");
+    }
+}
+
 void escribir_resultado(int id_prueba, int N, double tiempo)
 {
     FILE *fp;
@@ -90,7 +100,7 @@ int main(int argc, char **argv)
         a[i] = malloc(sizeof(double) * NUM_COLS);
         for (j = 0; j < NUM_COLS; j++)
         {
-            a[i][j] = getElementoAleatorio();
+            a[i][j] = 1;
         }
     }
 
@@ -100,14 +110,14 @@ int main(int argc, char **argv)
         b[i] = malloc(sizeof(double) * N);
         for (j = 0; j < N; j++)
         {
-            b[i][j] = getElementoAleatorio();
+            b[i][j] = 2;
         }
     }
 
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = getElementoAleatorio();
+        c[i] = 1;
     }
 
     // Reservamos memoria para las filas de D e inicializamos a 0 sus elementos
@@ -120,20 +130,7 @@ int main(int argc, char **argv)
         }
     }
 
-    start_counter(); // Iniciamos el contador
-
-    // Bucle del PDF
-    for (i = 0; i < N; i++)
-    {
-        for (j = 0; j < N; j++)
-        {
-            for (k = 0; k < 8; k++)
-            {
-                d[i][j] += 2 * a[i][k] * (b[k][j] - c[k]);
-            }
-        }
-    }
-
+    // Entendemos que la inicialización del vector no entra dentro del tiempo de computación
     for (i = 0; i < N; i++)
     { // Inicializamos los elementos del vector a 0, 1, 2, ...
         ind[i] = i;
@@ -148,6 +145,20 @@ int main(int argc, char **argv)
     }
 
     f = 0;
+
+    start_counter(); // Iniciamos el contador
+
+    // Bucle del PDF
+    for (i = 0; i < N; i++)
+    {
+        for (j = 0; j < N; j++)
+        {
+            for (k = 0; k < 8; k++)
+            {
+                d[i][j] += 2 * a[i][k] * (b[k][j] - c[k]);
+            }
+        }
+    }
 
     for (i = 0; i < N; i++)
     {
