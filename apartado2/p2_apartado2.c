@@ -53,10 +53,11 @@ void _printMat(double **m, int filas, int cols)
         printf("( ");
         for (int j = 0; j < cols; j++)
         {
-            printf("%5lf,", m[i][j]);
+            printf("%5.0lf,", m[i][j]);
         }
         printf(") \n");
     }
+    printf("\n");
 }
 
 void escribir_resultado(int id_prueba, int N, double tiempo)
@@ -189,10 +190,10 @@ int main(int argc, char **argv)
 
     start_counter(); // Iniciamos el contador
 
-    for (i = 0; i < N; i++)
+    for (i = 0; i < N; i+=2)
     {
         lineaB = bTrasp[i];
-        lineaB2 = lineaB + 1;
+        lineaB2 = bTrasp[i + 1];
         lineaB[0] -= c[0];
         lineaB[1] -= c[1];
         lineaB[2] -= c[2];
@@ -254,6 +255,8 @@ int main(int argc, char **argv)
                     elem2 += lineaA[7] * lineaB2[7];
                     elem2 *= 2;
                     d[i][j + 1] = elem2;
+                    //printf("I %d, J %d\n", i, j);
+    //_printMat(d, N, N);
                 }
             }
         }
@@ -283,7 +286,6 @@ int main(int argc, char **argv)
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
 
-    _printMat(d, N, N);
 
     liberarMatriz(a, N);
     liberarMatriz(bTrasp, N);
