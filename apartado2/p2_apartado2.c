@@ -4,7 +4,7 @@
 
 #define NUM_COLS 8
 #define LINEA_CACHE 64
-#define BLOCK_SIZE 19
+#define BLOCK_SIZE 18
 
 static unsigned cyc_hi = 0;
 static unsigned cyc_lo = 0;
@@ -46,10 +46,13 @@ double get_counter()
     return result;
 }
 
-void _printMat(double** m, int filas, int cols) {
-    for (int i = 0; i < filas; i++) {
+void _printMat(double **m, int filas, int cols)
+{
+    for (int i = 0; i < filas; i++)
+    {
         printf("( ");
-        for (int j = 0; j < cols; j++) {
+        for (int j = 0; j < cols; j++)
+        {
             printf("%5lf,", m[i][j]);
         }
         printf(") \n");
@@ -199,13 +202,21 @@ int main(int argc, char **argv)
 
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
     {
-        i_max = block_a + BLOCK_SIZE < N ? block_a + BLOCK_SIZE : N;
+        i_max = block_a + BLOCK_SIZE;
+        if (i_max > N)
+        {
+            i_max = N;
+        }
         for (block_b = 0; block_b < N; block_b += BLOCK_SIZE) // Bloque de la matriz B
         {
-            j_max = block_b + BLOCK_SIZE < N ? block_b + BLOCK_SIZE : N;
+            j_max = block_b + BLOCK_SIZE;
+            if (j_max > N)
+            {
+                j_max = N;
+            }
             for (i = block_a; i < i_max; i++) // Recorremos el bloque de la matriz A
             {
-                for (j = block_b; j < j_max; j++) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
+                for (j = block_b; j < j_max; j += 2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
                     d[i][j] += a[i][0] * bTrasp[j][0];
                     d[i][j] += a[i][1] * bTrasp[j][1];
@@ -216,11 +227,19 @@ int main(int argc, char **argv)
                     d[i][j] += a[i][6] * bTrasp[j][6];
                     d[i][j] += a[i][7] * bTrasp[j][7];
                     d[i][j] *= 2;
+                    d[i][j + 1] += a[i][0] * bTrasp[j + 1][0];
+                    d[i][j + 1] += a[i][1] * bTrasp[j + 1][1];
+                    d[i][j + 1] += a[i][2] * bTrasp[j + 1][2];
+                    d[i][j + 1] += a[i][3] * bTrasp[j + 1][3];
+                    d[i][j + 1] += a[i][4] * bTrasp[j + 1][4];
+                    d[i][j + 1] += a[i][5] * bTrasp[j + 1][5];
+                    d[i][j + 1] += a[i][6] * bTrasp[j + 1][6];
+                    d[i][j + 1] += a[i][7] * bTrasp[j + 1][7];
+                    d[i][j + 1] *= 2;
                 }
             }
         }
     }
-
 
     for (i = 0; i < N; i += 5)
     {
