@@ -192,23 +192,23 @@ int main(int argc, char **argv)
     for (i = 0; i < N; i++)
     {
         lineaB = bTrasp[i];
-        lineaB[0] = lineaB[0] - c[0];
-        lineaB[1] = lineaB[1] - c[1];
-        lineaB[2] = lineaB[2] - c[2];
-        lineaB[3] = lineaB[3] - c[3];
-        lineaB[4] = lineaB[4] - c[4];
-        lineaB[5] = lineaB[5] - c[5];
-        lineaB[6] = lineaB[6] - c[6];
-        lineaB[7] = lineaB[7] - c[7];
         lineaB2 = lineaB + 1;
-        lineaB2[0] = lineaB2[0] - c[0];
-        lineaB2[1] = lineaB2[1] - c[1];
-        lineaB2[2] = lineaB2[2] - c[2];
-        lineaB2[3] = lineaB2[3] - c[3];
-        lineaB2[4] = lineaB2[4] - c[4];
-        lineaB2[5] = lineaB2[5] - c[5];
-        lineaB2[6] = lineaB2[6] - c[6];
-        lineaB2[7] = lineaB2[7] - c[7];
+        lineaB[0] -= c[0];
+        lineaB[1] -= c[1];
+        lineaB[2] -= c[2];
+        lineaB[3] -= c[3];
+        lineaB[4] -= c[4];
+        lineaB[5] -= c[5];
+        lineaB[6] -= c[6];
+        lineaB[7] -= c[7];
+        lineaB2[0] -= c[0];
+        lineaB2[1] -= c[1];
+        lineaB2[2] -= c[2];
+        lineaB2[3] -= c[3];
+        lineaB2[4] -= c[4];
+        lineaB2[5] -= c[5];
+        lineaB2[6] -= c[6];
+        lineaB2[7] -= c[7];
     }
 
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
