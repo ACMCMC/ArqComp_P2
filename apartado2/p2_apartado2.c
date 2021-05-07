@@ -283,6 +283,8 @@ int main(int argc, char **argv)
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
 
+    _printMat(d, N, N);
+
     liberarMatriz(a, N);
     liberarMatriz(bTrasp, N);
     liberarMatriz(d, N);
