@@ -3,6 +3,8 @@
 #include <time.h>
 
 #define NUM_COLS 8
+#define LINEA_CACHE 64
+#define BLOCK_SIZE 19
 
 static unsigned cyc_hi = 0;
 static unsigned cyc_lo = 0;
@@ -44,6 +46,16 @@ double get_counter()
     return result;
 }
 
+void _printMat(double** m, int filas, int cols) {
+    for (int i = 0; i < filas; i++) {
+        printf("( ");
+        for (int j = 0; j < cols; j++) {
+            printf("%5lf,", m[i][j]);
+        }
+        printf(") \n");
+    }
+}
+
 void escribir_resultado(int id_prueba, int N, double tiempo)
 {
     FILE *fp;
@@ -56,15 +68,77 @@ void escribir_resultado(int id_prueba, int N, double tiempo)
     }
 }
 
+double gen0()
+{
+    return 0;
+}
+
+// a y c a 1
+double gen1()
+{
+    return 1;
+}
+//b a 2
+double gen2()
+{
+    return 2;
+}
+//dan 8*N
+
 double getElementoAleatorio()
 {
     return ((double)rand() / RAND_MAX);
 }
 
+double **reservarMatriz(int filas, int cols, double(fun)())
+{
+    int i, j;
+    double **mat;
+
+    mat = malloc(sizeof(double) * filas);
+
+    for (i = 0; i < filas; i++)
+    {
+        mat[i] = malloc(sizeof(double) * cols);
+        for (j = 0; j < cols; j++)
+        {
+            mat[i][j] = fun();
+        }
+    }
+
+    return mat;
+}
+
+void liberarMatriz(double **mat, int filas)
+{
+    int i;
+    for (i = 0; i < filas; i++)
+    {
+        free(mat[i]);
+    }
+
+    free(mat);
+}
+
+double **matTraspuesta(double **mat, int filas, int cols)
+{
+    int i, j;
+    double **matTrasp = reservarMatriz(cols, filas, gen0);
+
+    for (i = 0; i < filas; i++)
+    {
+        for (j = 0; j < cols; j++)
+        {
+            matTrasp[j][i] = mat[i][j];
+        }
+    }
+    return matTrasp;
+}
+
 int main(int argc, char **argv)
 {
-    unsigned int N, id_prueba, i, j, k, *ind, swap, swap_i;
-    double **a, **b, *c, **d, *e, f, tiempo;
+    unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
+    double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
 
     if (argc != 3)
     {
@@ -77,87 +151,23 @@ int main(int argc, char **argv)
 
     srand(clock());
 
-    a = malloc(sizeof(double *) * N);        // Reservamos memoria para los punteros a las filas de A
-    b = malloc(sizeof(double *) * NUM_COLS); // Reservamos memoria para los punteros a las filas de B
-    c = malloc(sizeof(double) * NUM_COLS);   // Reservamos memoria para C
-    d = malloc(sizeof(double *) * N);        // Reservamos memoria para los punteros a las filas de D
+    a = reservarMatriz(N, NUM_COLS, gen1);
+    b = reservarMatriz(NUM_COLS, N, gen2);
+    d = reservarMatriz(N, N, gen0);
     e = malloc(sizeof(double) * N);
     ind = malloc(sizeof(int) * N);
 
-    // Reservamos memoria para las filas de A e inicializamos a valores aleatorios cada elemento
-    for (i = 0; i < N; i++)
-    {
-        a[i] = malloc(sizeof(double) * NUM_COLS);
-        for (j = 0; j < NUM_COLS; j++)
-        {
-            //a[i][j] = getElementoAleatorio();
-            a[i][j]=1;
-        }
-    }
-
-    // Reservamos memoria para las filas de B e inicializamos a valores aleatorios cada elemento
-    for (i = 0; i < NUM_COLS; i++)
-    {
-        b[i] = malloc(sizeof(double) * N);
-        for (j = 0; j < N; j++)
-        {
-            //b[i][j] = getElementoAleatorio();
-            b[i][j]=2;
-        }
-    }
-
+    c = malloc(sizeof(double) * NUM_COLS); // Reservamos memoria para C
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        //c[i] = getElementoAleatorio();
-        c[i]=1;
+        c[i] = 1;
     }
 
-    // Reservamos memoria para las filas de D e inicializamos a 0 sus elementos
-    for (i = 0; i < N; i++)
-    {
-        d[i] = malloc(sizeof(double) * N);
-        for (j = 0; j < N; j++)
-        {
-            d[i][j] = 0;
-        }
-    }
+    bTrasp = matTraspuesta(b, NUM_COLS, N);
+    liberarMatriz(b, NUM_COLS);
 
-    start_counter(); // Iniciamos el contador
-
-    //Hacemos un desenrrollamiento del lazo for en i
-    for (i = 0; i < N; i+=5)
-    {
-        for (j = 0; j < N; j++)
-        {
-            for (k = 0; k < 8; k++)
-            {
-                d[i][j] += 2 * a[i][k] * (b[k][j] - c[k]);
-                d[i+1][j] += 2 * a[i+1][k] * (b[k][j] - c[k]);
-                d[i+2][j] += 2 * a[i+2][k] * (b[k][j] - c[k]);
-                d[i+3][j] += 2 * a[i+3][k] * (b[k][j] - c[k]);
-                d[i+4][j] += 2 * a[i+4][k] * (b[k][j] - c[k]);
-            }
-        }
-    }
-
-    /*//Hacemos un desenrrollamiento del lazo for en k (menos eficiente que hacerlo en i)
-    for (i = 0; i < N; i++)
-    {
-        for (j = 0; j < N; j++)
-        {
-            k=0;
-            d[i][j] += 2 * a[i][k] * (b[k][j] - c[k]);
-            d[i][j] += 2 * a[i][k+1] * (b[k+1][j] - c[k+1]);
-            d[i][j] += 2 * a[i][k+2] * (b[k+2][j] - c[k+2]);
-            d[i][j] += 2 * a[i][k+3] * (b[k+3][j] - c[k+3]);
-            d[i][j] += 2 * a[i][k+4] * (b[k+4][j] - c[k+4]);
-            d[i][j] += 2 * a[i][k+5] * (b[k+5][j] - c[k+5]);
-            d[i][j] += 2 * a[i][k+6] * (b[k+6][j] - c[k+6]);
-            d[i][j] += 2 * a[i][k+7] * (b[k+7][j] - c[k+7]);
-        }
-    }*/
-
+    // Entendemos que la inicialización del vector no entra dentro del tiempo de computación
     for (i = 0; i < N; i++)
     { // Inicializamos los elementos del vector a 0, 1, 2, ...
         ind[i] = i;
@@ -173,22 +183,61 @@ int main(int argc, char **argv)
 
     f = 0;
 
-    for (i = 0; i < N; i+=5)
+    start_counter(); // Iniciamos el contador
+
+    for (i = 0; i < N; i++)
+    {
+        bTrasp[i][0] = bTrasp[i][0] - c[0];
+        bTrasp[i][1] = bTrasp[i][1] - c[1];
+        bTrasp[i][2] = bTrasp[i][2] - c[2];
+        bTrasp[i][3] = bTrasp[i][3] - c[3];
+        bTrasp[i][4] = bTrasp[i][4] - c[4];
+        bTrasp[i][5] = bTrasp[i][5] - c[5];
+        bTrasp[i][6] = bTrasp[i][6] - c[6];
+        bTrasp[i][7] = bTrasp[i][7] - c[7];
+    }
+
+    for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
+    {
+        i_max = block_a + BLOCK_SIZE < N ? block_a + BLOCK_SIZE : N;
+        for (block_b = 0; block_b < N; block_b += BLOCK_SIZE) // Bloque de la matriz B
+        {
+            j_max = block_b + BLOCK_SIZE < N ? block_b + BLOCK_SIZE : N;
+            for (i = block_a; i < i_max; i++) // Recorremos el bloque de la matriz A
+            {
+                for (j = block_b; j < j_max; j++) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
+                {
+                    d[i][j] += a[i][0] * bTrasp[j][0];
+                    d[i][j] += a[i][1] * bTrasp[j][1];
+                    d[i][j] += a[i][2] * bTrasp[j][2];
+                    d[i][j] += a[i][3] * bTrasp[j][3];
+                    d[i][j] += a[i][4] * bTrasp[j][4];
+                    d[i][j] += a[i][5] * bTrasp[j][5];
+                    d[i][j] += a[i][6] * bTrasp[j][6];
+                    d[i][j] += a[i][7] * bTrasp[j][7];
+                    d[i][j] *= 2;
+                }
+            }
+        }
+    }
+
+
+    for (i = 0; i < N; i += 5)
     {
         e[i] = d[ind[i]][ind[i]] / 2;
         f += e[i];
 
-        e[i+1] = d[ind[i+1]][ind[i+1]] / 2;
-        f += e[i+1];
+        e[i + 1] = d[ind[i + 1]][ind[i + 1]] / 2;
+        f += e[i + 1];
 
-        e[i+2] = d[ind[i+2]][ind[i+2]] / 2;
-        f += e[i+2];
+        e[i + 2] = d[ind[i + 2]][ind[i + 2]] / 2;
+        f += e[i + 2];
 
-        e[i+3] = d[ind[i+3]][ind[i+3]] / 2;
-        f += e[i+3];
+        e[i + 3] = d[ind[i + 3]][ind[i + 3]] / 2;
+        f += e[i + 3];
 
-        e[i+4] = d[ind[i+4]][ind[i+4]] / 2;
-        f += e[i+4];
+        e[i + 4] = d[ind[i + 4]][ind[i + 4]] / 2;
+        f += e[i + 4];
     }
 
     tiempo = get_counter();
@@ -197,20 +246,11 @@ int main(int argc, char **argv)
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
 
-    for (i = 0; i < N; i++)
-    {
-        free(a[i]);
-        free(d[i]);
-    }
-    for (i = 0; i < NUM_COLS; i++)
-    {
-        free(b[i]);
-    }
-    
-    free(a);
-    free(b);
+    liberarMatriz(a, N);
+    liberarMatriz(bTrasp, N);
+    liberarMatriz(d, N);
+
     free(c);
-    free(d);
     free(e);
     free(ind);
 
