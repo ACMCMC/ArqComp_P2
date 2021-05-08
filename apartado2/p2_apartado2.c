@@ -190,7 +190,7 @@ int main(int argc, char **argv)
 
     start_counter(); // Iniciamos el contador
 
-    for (i = 0; i < N; i+=2)
+    for (i = 0; i < N; i += 2)
     {
         lineaB = bTrasp[i];
         lineaB2 = bTrasp[i + 1];
@@ -228,7 +228,7 @@ int main(int argc, char **argv)
             }
             for (i = block_a; i < i_max; i++) // Recorremos el bloque de la matriz A
             {
-                for (j = block_b; j < j_max; j+=2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
+                for (j = block_b; j < j_max; j += 2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
                     lineaA = a[i];
                     lineaB = bTrasp[j];
@@ -260,7 +260,7 @@ int main(int argc, char **argv)
         }
     }
 
-    for (i = 0; i < N; i += 5)
+    for (i = 0; i < N; i += 10)
     {
         e[i] = d[ind[i]][ind[i]] / 2;
         f += e[i];
@@ -276,6 +276,21 @@ int main(int argc, char **argv)
 
         e[i + 4] = d[ind[i + 4]][ind[i + 4]] / 2;
         f += e[i + 4];
+
+        e[i + 5] = d[ind[i + 5]][ind[i + 5]] / 2;
+        f += e[i + 5];
+
+        e[i + 6] = d[ind[i + 6]][ind[i + 6]] / 2;
+        f += e[i + 6];
+
+        e[i + 7] = d[ind[i + 7]][ind[i + 7]] / 2;
+        f += e[i + 7];
+
+        e[i + 8] = d[ind[i + 8]][ind[i + 8]] / 2;
+        f += e[i + 8];
+
+        e[i + 9] = d[ind[i + 9]][ind[i + 9]] / 2;
+        f += e[i + 9];
     }
 
     tiempo = get_counter();
@@ -283,7 +298,6 @@ int main(int argc, char **argv)
     printf("Valor de f: %f\n\n", f);
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
-
 
     liberarMatriz(a, N);
     liberarMatriz(bTrasp, N);
