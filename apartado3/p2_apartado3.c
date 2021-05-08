@@ -192,7 +192,7 @@ int main(int argc, char **argv)
     f = 0;
 
     vectorReduccion = _mm_malloc(2 * sizeof(double), ALINEAMIENTO); // Lo usaremos despues al computar el resultado de la suma
-    vectorAuxiliar = _mm_malloc(2 * sizeof(double), ALINEAMIENTO); // Lo usaremos despues al computar f
+    vectorAuxiliar = _mm_malloc(2 * sizeof(double), ALINEAMIENTO);  // Lo usaremos despues al computar f
 
     start_counter(); // Iniciamos el contador
 
@@ -298,34 +298,34 @@ int main(int argc, char **argv)
     }
 
     regResult = _mm_set1_pd(0); // regResult = (0 , 0)
-    reg2 = _mm_set1_pd(2); // reg2 = (2 , 2)
+    reg2 = _mm_set1_pd(2);      // reg2 = (2 , 2)
     for (i = 0; i < N; i += 10)
     {
         // Necesitamos usar el vector auxiliar porque d[ind[i]][ind[i]] y d[ind[i+1]][ind[i+1]] no son elementos contiguos en memoria. Esta operacion va a hacer que usar vectorizacion no sea eficiente.
         vectorAuxiliar[0] = d[ind[i]][ind[i]];
-        vectorAuxiliar[1] = d[ind[i+1]][ind[i+1]];
+        vectorAuxiliar[1] = d[ind[i + 1]][ind[i + 1]];
 
         reg1 = _mm_load_pd(vectorAuxiliar);
-        vectorAuxiliar[0] = d[ind[i+2]][ind[i+2]];
-        vectorAuxiliar[1] = d[ind[i+3]][ind[i+3]];
+        vectorAuxiliar[0] = d[ind[i + 2]][ind[i + 2]];
+        vectorAuxiliar[1] = d[ind[i + 3]][ind[i + 3]];
         reg3 = _mm_div_pd(reg1, reg2);
         regResult = _mm_add_pd(regResult, reg3);
 
         reg1 = _mm_load_pd(vectorAuxiliar);
-        vectorAuxiliar[0] = d[ind[i+4]][ind[i+4]];
-        vectorAuxiliar[1] = d[ind[i+5]][ind[i+5]];
+        vectorAuxiliar[0] = d[ind[i + 4]][ind[i + 4]];
+        vectorAuxiliar[1] = d[ind[i + 5]][ind[i + 5]];
         reg3 = _mm_div_pd(reg1, reg2);
         regResult = _mm_add_pd(regResult, reg3);
 
         reg1 = _mm_load_pd(vectorAuxiliar);
-        vectorAuxiliar[0] = d[ind[i+6]][ind[i+6]];
-        vectorAuxiliar[1] = d[ind[i+7]][ind[i+7]];
+        vectorAuxiliar[0] = d[ind[i + 6]][ind[i + 6]];
+        vectorAuxiliar[1] = d[ind[i + 7]][ind[i + 7]];
         reg3 = _mm_div_pd(reg1, reg2);
         regResult = _mm_add_pd(regResult, reg3);
-        
+
         reg1 = _mm_load_pd(vectorAuxiliar);
-        vectorAuxiliar[0] = d[ind[i+8]][ind[i+8]];
-        vectorAuxiliar[1] = d[ind[i+9]][ind[i+9]];
+        vectorAuxiliar[0] = d[ind[i + 8]][ind[i + 8]];
+        vectorAuxiliar[1] = d[ind[i + 9]][ind[i + 9]];
         reg3 = _mm_div_pd(reg1, reg2);
         regResult = _mm_add_pd(regResult, reg3);
 
