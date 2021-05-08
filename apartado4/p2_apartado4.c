@@ -194,8 +194,6 @@ int main(int argc, char **argv)
     #pragma omp parallel private(i)
     {
 
-        printf("HILO %d\n", omp_get_thread_num());
-
     #pragma omp for
     for (i = 0; i < N; i += 2)
     {
@@ -221,6 +219,10 @@ int main(int argc, char **argv)
 
     }
 
+    #pragma omp parallel private(i)
+    {
+    
+    #pragma omp for
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
     {
         i_max = block_a + BLOCK_SIZE;
@@ -228,6 +230,7 @@ int main(int argc, char **argv)
         {
             i_max = N;
         }
+        #pragma omp for
         for (block_b = 0; block_b < N; block_b += BLOCK_SIZE) // Bloque de la matriz B
         {
             j_max = block_b + BLOCK_SIZE;
@@ -235,8 +238,10 @@ int main(int argc, char **argv)
             {
                 j_max = N;
             }
+            #pragma omp for
             for (i = block_a; i < i_max; i++) // Recorremos el bloque de la matriz A
             {
+                #pragma omp for
                 for (j = block_b; j < j_max; j += 2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
                     lineaA = a[i];
@@ -269,6 +274,12 @@ int main(int argc, char **argv)
         }
     }
 
+    }
+
+    #pragma omp parallel private(i)
+    {
+
+    #pragma omp for
     for (i = 0; i < N; i += 10)
     {
         e[i] = d[ind[i]][ind[i]] / 2;
@@ -300,6 +311,8 @@ int main(int argc, char **argv)
 
         e[i + 9] = d[ind[i + 9]][ind[i + 9]] / 2;
         f += e[i + 9];
+    }
+
     }
 
     tiempo = get_counter();
