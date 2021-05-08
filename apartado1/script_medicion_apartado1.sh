@@ -1,6 +1,8 @@
 #!/bin/bash
 make -f Makefile_O0 clean # Compilamos
 make -f Makefile_O0 # Compilamos
+rm medidas_1_O0.csv # Limpiamos el fichero de resultados
+rm medidas_1_O2.csv # Limpiamos el fichero de resultados
 rm medidas_1.csv # Limpiamos el fichero de resultados
 echo 'ID_PRUEBA,N,T_TOTAL' > medidas_1.csv # Cabecera del fichero
 lista_n="250 500 750 1000 1500 2000 2550 3000" # Valores de C para probar
