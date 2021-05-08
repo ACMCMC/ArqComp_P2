@@ -230,11 +230,11 @@ int main(int argc, char **argv)
             {
                 for (j = block_b; j < j_max; j+=2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
-                    elem1 = 0;
-                    elem2 = 0;
                     lineaA = a[i];
                     lineaB = bTrasp[j];
                     lineaB2 = bTrasp[j + 1];
+                    elem1 = 0;
+                    elem2 = 0;
                     elem1 += lineaA[0] * lineaB[0];
                     elem1 += lineaA[1] * lineaB[1];
                     elem1 += lineaA[2] * lineaB[2];
