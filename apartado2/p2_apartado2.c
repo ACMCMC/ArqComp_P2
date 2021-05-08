@@ -262,7 +262,12 @@ int main(int argc, char **argv)
         }
     }
 
-    for (i = 0; i < N; i += 5)
+    for (i = 0; i < N; i++)
+    {
+        e[i] = d[ind[i]][ind[i]] / 2;
+        f += e[i];
+    }
+    /*for (i = 0; i < N; i += 5)
     {
         e[i] = d[ind[i]][ind[i]] / 2;
         f += e[i];
@@ -278,7 +283,7 @@ int main(int argc, char **argv)
 
         e[i + 4] = d[ind[i + 4]][ind[i + 4]] / 2;
         f += e[i + 4];
-    }
+    }*/
 
     tiempo = get_counter();
 
