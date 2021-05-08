@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
     double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
     double elem1, elem2, *lineaA, *lineaB, *lineaB2;
-    __m128d reg1, reg2, regResult;
+    __m128d reg1, reg2, reg3, regResult, regResult2;
 
     if (argc != 3)
     {
@@ -198,37 +198,33 @@ int main(int argc, char **argv)
         lineaB = bTrasp[i];
         lineaB2 = bTrasp[i + 1];
         reg1 = _mm_load_pd(lineaB);
-        reg2 = _mm_load_pd(c);
-        regResult = _mm_sub_pd(reg1, reg2);
+        reg2 = _mm_load_pd(lineaB2);
+        reg3 = _mm_load_pd(c);
+        regResult = _mm_sub_pd(reg1, reg3);
+        regResult2 = _mm_sub_pd(reg2, reg3);
         _mm_store_pd(lineaB, regResult);
+        _mm_store_pd(lineaB2, regResult2);
         reg1 = _mm_load_pd(lineaB + 2);
-        reg2 = _mm_load_pd(c + 2);
-        regResult = _mm_sub_pd(reg1, reg2);
+        reg2 = _mm_load_pd(lineaB2 + 2);
+        reg3 = _mm_load_pd(c + 2);
+        regResult = _mm_sub_pd(reg1, reg3);
+        regResult2 = _mm_sub_pd(reg2, reg3);
         _mm_store_pd(lineaB + 2, regResult);
+        _mm_store_pd(lineaB2 + 2, regResult2);
         reg1 = _mm_load_pd(lineaB + 4);
-        reg2 = _mm_load_pd(c + 4);
-        regResult = _mm_sub_pd(reg1, reg2);
+        reg2 = _mm_load_pd(lineaB2 + 4);
+        reg3 = _mm_load_pd(c + 4);
+        regResult = _mm_sub_pd(reg1, reg3);
+        regResult2 = _mm_sub_pd(reg2, reg3);
         _mm_store_pd(lineaB + 4, regResult);
+        _mm_store_pd(lineaB2 + 4, regResult2);
         reg1 = _mm_load_pd(lineaB + 6);
-        reg2 = _mm_load_pd(c + 6);
-        regResult = _mm_sub_pd(reg1, reg2);
+        reg2 = _mm_load_pd(lineaB2 + 6);
+        reg3 = _mm_load_pd(c + 6);
+        regResult = _mm_sub_pd(reg1, reg3);
+        regResult2 = _mm_sub_pd(reg2, reg3);
         _mm_store_pd(lineaB + 6, regResult);
-        reg1 = _mm_load_pd(lineaB2);
-        reg2 = _mm_load_pd(c);
-        regResult = _mm_sub_pd(reg1, reg2);
-        _mm_store_pd(lineaB2, regResult);
-        reg1 = _mm_load_pd(lineaB2 + 2);
-        reg2 = _mm_load_pd(c + 2);
-        regResult = _mm_sub_pd(reg1, reg2);
-        _mm_store_pd(lineaB2 + 2, regResult);
-        reg1 = _mm_load_pd(lineaB2 + 4);
-        reg2 = _mm_load_pd(c + 4);
-        regResult = _mm_sub_pd(reg1, reg2);
-        _mm_store_pd(lineaB2 + 4, regResult);
-        reg1 = _mm_load_pd(lineaB2 + 6);
-        reg2 = _mm_load_pd(c + 6);
-        regResult = _mm_sub_pd(reg1, reg2);
-        _mm_store_pd(lineaB2 + 6, regResult);
+        _mm_store_pd(lineaB2 + 6, regResult2);
     }
 
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
