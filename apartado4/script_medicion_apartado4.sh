@@ -6,7 +6,8 @@ lista_n="250 500 750 1000 1500 2000 2550 3000" # Valores de C para probar
 lista_num_threads="1 2 4 6 8" # Valores de C para probar
 for num_threads in $lista_num_threads;
 do
-    set OMP_NUM_THREADS=num_threads
+    export OMP_NUM_THREADS=$num_threads
+    echo "=========== NUMERO DE HILOS: $OMP_NUM_THREADS ==========="
     for id_prueba in {1..20}; # Repetimos las pruebas 50 veces
     do
         echo "=========== ID DE PRUEBA: $id_prueba ==========="
