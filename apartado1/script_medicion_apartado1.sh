@@ -1,6 +1,6 @@
 #!/bin/bash
-make -f Makefile_O0 clean # Compilamos
-make -f Makefile_O0 # Compilamos
+make --file=Makefile_O0 clean # Compilamos
+make --file=Makefile_O0 # Compilamos
 rm medidas_1_O0.csv # Limpiamos el fichero de resultados
 rm medidas_1_O2.csv # Limpiamos el fichero de resultados
 rm medidas_1.csv # Limpiamos el fichero de resultados
