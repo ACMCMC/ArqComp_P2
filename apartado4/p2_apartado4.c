@@ -222,7 +222,7 @@ int main(int argc, char **argv)
     #pragma omp parallel private(i_max,j_max,i,j)
     {
     
-    #pragma omp for collapse(4)
+    #pragma omp for
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
     {
         i_max = block_a + BLOCK_SIZE;
