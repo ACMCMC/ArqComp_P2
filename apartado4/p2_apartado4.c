@@ -219,7 +219,7 @@ int main(int argc, char **argv)
 
     }
 
-    #pragma omp parallel private(i)
+    #pragma omp parallel private(i_max,j_max,i,j)
     {
     
     #pragma omp for collapse(4)
