@@ -228,12 +228,13 @@ int main(int argc, char **argv)
             }
             for (i = block_a; i < i_max; i++) // Recorremos el bloque de la matriz A
             {
-                for (j = block_b; j < j_max; j ++) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
+                for (j = block_b; j < j_max; j+=2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
                     elem1 = 0;
                     elem2 = 0;
                     lineaA = a[i];
                     lineaB = bTrasp[j];
+                    lineaB2 = bTrasp[j + 1];
                     elem1 += lineaA[0] * lineaB[0];
                     elem1 += lineaA[1] * lineaB[1];
                     elem1 += lineaA[2] * lineaB[2];
@@ -244,6 +245,16 @@ int main(int argc, char **argv)
                     elem1 += lineaA[7] * lineaB[7];
                     elem1 *= 2;
                     d[i][j] = elem1;
+                    elem2 += lineaA[0] * lineaB2[0];
+                    elem2 += lineaA[1] * lineaB2[1];
+                    elem2 += lineaA[2] * lineaB2[2];
+                    elem2 += lineaA[3] * lineaB2[3];
+                    elem2 += lineaA[4] * lineaB2[4];
+                    elem2 += lineaA[5] * lineaB2[5];
+                    elem2 += lineaA[6] * lineaB2[6];
+                    elem2 += lineaA[7] * lineaB2[7];
+                    elem2 *= 2;
+                    d[i][j + 1] = elem2;
                 }
             }
         }
@@ -272,6 +283,7 @@ int main(int argc, char **argv)
     printf("Valor de f: %f\n\n", f);
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
+
 
     liberarMatriz(a, N);
     liberarMatriz(bTrasp, N);
