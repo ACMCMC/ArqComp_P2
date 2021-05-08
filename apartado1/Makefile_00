@@ -4,15 +4,15 @@ OUTPUTS := $(ARCHS_C:.c=.out)
 
 OBJS := $(ARCHS_C:.c=.o)
 
-ARGS := -Wall -Wextra -pedantic -O0 -msse3
+ARGS := -Wall -Wextra -pedantic
 
 all: $(OUTPUTS)
 
 $(OUTPUTS): $(OBJS)
-	gcc -g $(@:.out=.o) -o $@ -L $(ARGS)
+	gcc -g $(@:.out=.o) -o $@ -L $(ARGS) -O0
 
 %.o: %.c
-	gcc -g -o $@ -c $< $(ARGS)
+	gcc -g -o $@ -c $< $(ARGS) -O0
 
 clean:
 	-find . -type f -name '*.o' -delete
