@@ -189,8 +189,6 @@ int main(int argc, char **argv)
     f = 0;
 
     start_counter(); // Iniciamos el contador
-    _printMat(a, N, NUM_COLS);
-    _printMat(bTrasp, N, NUM_COLS);
 
     for (i = 0; i < N; i+=2)
     {
@@ -213,7 +211,6 @@ int main(int argc, char **argv)
         lineaB2[6] -= c[6];
         lineaB2[7] -= c[7];
     }
-    _printMat(bTrasp, N, NUM_COLS);
 
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
     {
@@ -237,7 +234,6 @@ int main(int argc, char **argv)
                     elem2 = 0;
                     lineaA = a[i];
                     lineaB = bTrasp[j];
-                    //lineaB2 = lineaB + 1;
                     elem1 += lineaA[0] * lineaB[0];
                     elem1 += lineaA[1] * lineaB[1];
                     elem1 += lineaA[2] * lineaB[2];
@@ -248,18 +244,6 @@ int main(int argc, char **argv)
                     elem1 += lineaA[7] * lineaB[7];
                     elem1 *= 2;
                     d[i][j] = elem1;
-                    /*elem2 += lineaA[0] * lineaB2[0];
-                    elem2 += lineaA[1] * lineaB2[1];
-                    elem2 += lineaA[2] * lineaB2[2];
-                    elem2 += lineaA[3] * lineaB2[3];
-                    elem2 += lineaA[4] * lineaB2[4];
-                    elem2 += lineaA[5] * lineaB2[5];
-                    elem2 += lineaA[6] * lineaB2[6];
-                    elem2 += lineaA[7] * lineaB2[7];
-                    elem2 *= 2;
-                    d[i][j + 1] = elem2;*/
-                    printf("I %d, J %d\n", i, j);
-    _printMat(d, N, N);
                 }
             }
         }
@@ -288,7 +272,6 @@ int main(int argc, char **argv)
     printf("Valor de f: %f\n\n", f);
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
-
 
     liberarMatriz(a, N);
     liberarMatriz(bTrasp, N);
