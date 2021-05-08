@@ -145,8 +145,8 @@ int main(int argc, char **argv)
 {
     unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
     double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
-    double elem1, elem2, *lineaA, *lineaB, *lineaB2;
-    __m128d reg1, reg2, reg3, regResult, regResult2;
+    double elem1, elem2, *lineaA, *lineaB, *lineaB2, *vectorReduccion;
+    __m128d reg1, reg2, reg3, regResult, regResult2, regResult3, regResult4;
 
     if (argc != 3)
     {
@@ -190,6 +190,8 @@ int main(int argc, char **argv)
     }
 
     f = 0;
+
+    vectorReduccion = _mm_malloc(2 * sizeof(double), ALINEAMIENTO); // Lo usaremos despues al computar el resultado de la suma
 
     start_counter(); // Iniciamos el contador
 
@@ -248,28 +250,47 @@ int main(int argc, char **argv)
                     lineaA = a[i];
                     lineaB = bTrasp[j];
                     lineaB2 = bTrasp[j + 1];
-                    elem1 = 0;
-                    elem2 = 0;
-                    elem1 += lineaA[0] * lineaB[0];
-                    elem1 += lineaA[1] * lineaB[1];
-                    elem1 += lineaA[2] * lineaB[2];
-                    elem1 += lineaA[3] * lineaB[3];
-                    elem1 += lineaA[4] * lineaB[4];
-                    elem1 += lineaA[5] * lineaB[5];
-                    elem1 += lineaA[6] * lineaB[6];
-                    elem1 += lineaA[7] * lineaB[7];
-                    elem1 *= 2;
-                    d[i][j] = elem1;
-                    elem2 += lineaA[0] * lineaB2[0];
-                    elem2 += lineaA[1] * lineaB2[1];
-                    elem2 += lineaA[2] * lineaB2[2];
-                    elem2 += lineaA[3] * lineaB2[3];
-                    elem2 += lineaA[4] * lineaB2[4];
-                    elem2 += lineaA[5] * lineaB2[5];
-                    elem2 += lineaA[6] * lineaB2[6];
-                    elem2 += lineaA[7] * lineaB2[7];
-                    elem2 *= 2;
-                    d[i][j + 1] = elem2;
+
+                    regResult = _mm_set1_pd(0); // regResult = (0 , 0)
+                    regResult4 = _mm_set1_pd(0); // regResult4 = (0 , 0)
+
+                    reg1 = _mm_load_pd(lineaA); // reg1 = (a[i][0] , a[i][1])
+                    reg2 = _mm_load_pd(lineaB); // reg2 = (b[j][0] , b[j][1])
+                    reg3 = _mm_load_pd(lineaB2); // reg3 = (b[j+1][0] , b[j+1][1])
+                    regResult2 = _mm_mul_pd(reg1, reg2); // regResult2 = (a[i][0] * b[j][0] , a[i][1] * b[j][1])
+                    regResult3 = _mm_mul_pd(reg1, reg3); // regResult3 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
+                    regResult = _mm_add_pd(regResult, regResult2); // regResult += regResult2
+                    regResult4 = _mm_add_pd(regResult4, regResult3); // regResult4 += regResult3
+
+                    reg1 = _mm_load_pd(lineaA + 2);
+                    reg2 = _mm_load_pd(lineaB + 2);
+                    reg3 = _mm_load_pd(lineaB2 + 2);
+                    regResult2 = _mm_mul_pd(reg1, reg2);
+                    regResult3 = _mm_mul_pd(reg1, reg3);
+                    regResult = _mm_add_pd(regResult, regResult2);
+                    regResult4 = _mm_add_pd(regResult4, regResult3);
+
+                    reg1 = _mm_load_pd(lineaA + 4);
+                    reg2 = _mm_load_pd(lineaB + 4);
+                    reg3 = _mm_load_pd(lineaB2 + 4);
+                    regResult2 = _mm_mul_pd(reg1, reg2);
+                    regResult3 = _mm_mul_pd(reg1, reg3);
+                    regResult = _mm_add_pd(regResult, regResult2);
+                    regResult4 = _mm_add_pd(regResult4, regResult3);
+
+                    reg1 = _mm_load_pd(lineaA + 6);
+                    reg2 = _mm_load_pd(lineaB + 6);
+                    reg3 = _mm_load_pd(lineaB2 + 6);
+                    regResult2 = _mm_mul_pd(reg1, reg2);
+                    regResult3 = _mm_mul_pd(reg1, reg3);
+                    regResult = _mm_add_pd(regResult, regResult2);
+                    regResult4 = _mm_add_pd(regResult4, regResult3);
+
+                    _mm_store_pd(vectorReduccion, regResult);
+                    d[i][j] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
+
+                    _mm_store_pd(vectorReduccion, regResult4);
+                    d[i][j + 1] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
                 }
             }
         }
@@ -306,6 +327,7 @@ int main(int argc, char **argv)
     _mm_free(c);
     _mm_free(e);
     _mm_free(ind);
+    _mm_free(vectorReduccion);
 
     exit(EXIT_SUCCESS);
 }
