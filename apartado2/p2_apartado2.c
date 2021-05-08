@@ -189,6 +189,8 @@ int main(int argc, char **argv)
     f = 0;
 
     start_counter(); // Iniciamos el contador
+    _printMat(a, N, NUM_COLS);
+    _printMat(bTrasp, N, NUM_COLS);
 
     for (i = 0; i < N; i+=2)
     {
@@ -211,6 +213,7 @@ int main(int argc, char **argv)
         lineaB2[6] -= c[6];
         lineaB2[7] -= c[7];
     }
+    _printMat(bTrasp, N, NUM_COLS);
 
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
     {
@@ -255,19 +258,14 @@ int main(int argc, char **argv)
                     elem2 += lineaA[7] * lineaB2[7];
                     elem2 *= 2;
                     d[i][j + 1] = elem2;
-                    //printf("I %d, J %d\n", i, j);
-    //_printMat(d, N, N);
+                    printf("I %d, J %d\n", i, j);
+    _printMat(d, N, N);
                 }
             }
         }
     }
 
-    for (i = 0; i < N; i++)
-    {
-        e[i] = d[ind[i]][ind[i]] / 2;
-        f += e[i];
-    }
-    /*for (i = 0; i < N; i += 5)
+    for (i = 0; i < N; i += 5)
     {
         e[i] = d[ind[i]][ind[i]] / 2;
         f += e[i];
@@ -283,7 +281,7 @@ int main(int argc, char **argv)
 
         e[i + 4] = d[ind[i + 4]][ind[i + 4]] / 2;
         f += e[i + 4];
-    }*/
+    }
 
     tiempo = get_counter();
 
