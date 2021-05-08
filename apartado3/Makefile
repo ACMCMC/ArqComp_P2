@@ -1,4 +1,4 @@
-ARCHS_C := p2_apartado1.c
+ARCHS_C := p2_apartado3.c
 
 OUTPUTS := $(ARCHS_C:.c=.out)
 
