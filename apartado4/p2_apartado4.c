@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 {
     unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
     double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
-    double elem1, elem2, *lineaA, *lineaB, *lineaB2;
+    double elem1, elem2, *lineaA, *lineaB, *lineaB2, elemReduccion;
 
     if (argc != 3)
     {
@@ -191,7 +191,7 @@ int main(int argc, char **argv)
 
     start_counter(); // Iniciamos el contador
 
-    #pragma omp parallel private(i)
+    #pragma omp parallel private(i,lineaB,lineaB2)
     {
 
     #pragma omp for
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
 
     }
 
-    #pragma omp parallel private(i_max,j_max,i,j)
+    #pragma omp parallel private(i_max,j_max,i,j,block_a,block_b,elem1,elem2,lineaA,lineaB,lineaB2)
     {
     
     #pragma omp for
@@ -273,41 +273,45 @@ int main(int argc, char **argv)
 
     }
 
-    #pragma omp parallel private(i)
+    #pragma omp parallel private(i,elemReduccion)
     {
 
     #pragma omp for
     for (i = 0; i < N; i += 10)
     {
+	elemReduccion = 0;
         e[i] = d[ind[i]][ind[i]] / 2;
-        f += e[i];
+        elemReduccion += e[i];
 
         e[i + 1] = d[ind[i + 1]][ind[i + 1]] / 2;
-        f += e[i + 1];
+        elemReduccion += e[i+1];
 
         e[i + 2] = d[ind[i + 2]][ind[i + 2]] / 2;
-        f += e[i + 2];
+        elemReduccion += e[i+2];
 
         e[i + 3] = d[ind[i + 3]][ind[i + 3]] / 2;
-        f += e[i + 3];
+        elemReduccion += e[i+3];
 
         e[i + 4] = d[ind[i + 4]][ind[i + 4]] / 2;
-        f += e[i + 4];
+        elemReduccion += e[i+4];
 
         e[i + 5] = d[ind[i + 5]][ind[i + 5]] / 2;
-        f += e[i + 5];
+        elemReduccion += e[i+5];
 
         e[i + 6] = d[ind[i + 6]][ind[i + 6]] / 2;
-        f += e[i + 6];
+        elemReduccion += e[i+6];
 
         e[i + 7] = d[ind[i + 7]][ind[i + 7]] / 2;
-        f += e[i + 7];
+        elemReduccion += e[i+7];
 
         e[i + 8] = d[ind[i + 8]][ind[i + 8]] / 2;
-        f += e[i + 8];
+        elemReduccion += e[i+8];
 
         e[i + 9] = d[ind[i + 9]][ind[i + 9]] / 2;
-        f += e[i + 9];
+        elemReduccion += e[i+9];
+	
+#pragma omp atomic
+	f+=elemReduccion;
     }
 
     }
