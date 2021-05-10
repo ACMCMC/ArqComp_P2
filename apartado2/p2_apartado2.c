@@ -230,24 +230,24 @@ int main(int argc, char **argv)
                     lineaB = bTrasp[j];
                     lineaB2 = bTrasp[j + 1];
                     elem1 = lineaA[0] * lineaB[0]; // Podriamos inicializar antes a 0, y poner esto como la suma, pero entonces tendriamos una potencial dependencia RAW.
-                    elem2 = lineaA[0] * lineaB2[0]; // Intercalamos las operaciones entre elem1 y elem2 para reducir la magnitud de las dependencias RAW.
                     elem1 += lineaA[1] * lineaB[1];
-                    elem2 += lineaA[1] * lineaB2[1];
                     elem1 += lineaA[2] * lineaB[2];
-                    elem2 += lineaA[2] * lineaB2[2];
                     elem1 += lineaA[3] * lineaB[3];
-                    elem2 += lineaA[3] * lineaB2[3];
                     elem1 += lineaA[4] * lineaB[4];
-                    elem2 += lineaA[4] * lineaB2[4];
                     elem1 += lineaA[5] * lineaB[5];
-                    elem2 += lineaA[5] * lineaB2[5];
                     elem1 += lineaA[6] * lineaB[6];
-                    elem2 += lineaA[6] * lineaB2[6];
                     elem1 += lineaA[7] * lineaB[7];
+                    elem2 = lineaA[0] * lineaB2[0]; // Intercalamos las operaciones entre elem1 y elem2 para reducir la magnitud de las dependencias RAW.
+                    elem2 += lineaA[1] * lineaB2[1];
+                    elem2 += lineaA[2] * lineaB2[2];
+                    elem2 += lineaA[3] * lineaB2[3];
+                    elem2 += lineaA[4] * lineaB2[4];
+                    elem2 += lineaA[5] * lineaB2[5];
+                    elem2 += lineaA[6] * lineaB2[6];
                     elem2 += lineaA[7] * lineaB2[7];
                     elem1 *= 2;
-                    elem2 *= 2;
                     d[i][j] = elem1;
+                    elem2 *= 2;
                     d[i][j + 1] = elem2;
                 }
             }
