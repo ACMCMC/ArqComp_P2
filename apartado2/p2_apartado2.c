@@ -72,28 +72,19 @@ void escribir_resultado(int id_prueba, int N, double tiempo)
     }
 }
 
+// Función que devuelve un 0
 double gen0()
 {
     return 0;
 }
 
-// a y c a 1
-double gen1()
-{
-    return 1;
-}
-//b a 2
-double gen2()
-{
-    return 2;
-}
-//dan 8*N
-
+// Función que devuelve un número aleatorio entre 0 y 1
 double getElementoAleatorio()
 {
     return ((double)rand() / RAND_MAX);
 }
 
+// Se encarga de reservar las filas de la matriz y el vector que apunta a las filas. Además usa la función parámetro para generar los elementos de la matriz.
 double **reservarMatriz(int filas, int cols, double(fun)())
 {
     int i, j;
@@ -113,6 +104,7 @@ double **reservarMatriz(int filas, int cols, double(fun)())
     return mat;
 }
 
+// Se encarga de liberar una matriz. No necesita conocer el número de columnas, ya que llega con liberar las filas y el vector de punteros a las filas.
 void liberarMatriz(double **mat, int filas)
 {
     int i;
@@ -124,6 +116,7 @@ void liberarMatriz(double **mat, int filas)
     free(mat);
 }
 
+// Se encarga de trasponer una matriz, el uso que le vamos a dar es el de trasponer la matriz B para que los cálculos sean más eficientes. No se encarga de liberar la matriz anterior, sino que devuelve una nueva que es la matriz original, pero traspuesta.
 double **matTraspuesta(double **mat, int filas, int cols)
 {
     int i, j;
@@ -141,23 +134,23 @@ double **matTraspuesta(double **mat, int filas, int cols)
 
 int main(int argc, char **argv)
 {
-    unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
-    double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
-    double elem1, elem2, *lineaA, *lineaB, *lineaB2;
+    unsigned int N, id_prueba, i, i_max, j, j_max, *ind, swap, swap_i, block_a, block_b;
+    double **a, **b, **bTrasp, *c, **d, *e, f, tiempo, elem1, elem2, *lineaA, *lineaB, *lineaB2;
 
+    // Comprobamos los argumentos que pasamos al programa
     if (argc != 3)
     {
         fprintf(stderr, "Formato del comando: %s [N] [ID de prueba]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-
     N = atoi(argv[1]);
     id_prueba = atoi(argv[2]);
 
-    srand(clock());
+    srand(clock()); // Semilla del generador aleatorio de números
 
-    a = reservarMatriz(N, NUM_COLS, gen1);
-    b = reservarMatriz(NUM_COLS, N, gen2);
+    // Reservamos las matrices
+    a = reservarMatriz(N, NUM_COLS, getElementoAleatorio);
+    b = reservarMatriz(NUM_COLS, N, getElementoAleatorio);
     d = reservarMatriz(N, N, gen0);
     e = malloc(sizeof(double) * N);
     ind = malloc(sizeof(int) * N);
@@ -166,20 +159,21 @@ int main(int argc, char **argv)
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = 1;
+        c[i] = getElementoAleatorio();
     }
 
+    // Trasponemos B. Entendemos que esto es parte del la configuracion previa, asi que no lo incluimos en el tiempo de computacion.
     bTrasp = matTraspuesta(b, NUM_COLS, N);
     liberarMatriz(b, NUM_COLS);
 
-    // Entendemos que la inicialización del vector no entra dentro del tiempo de computación
+    // Entendemos que la inicializacion del vector no entra dentro del tiempo de computacion.
     for (i = 0; i < N; i++)
     { // Inicializamos los elementos del vector a 0, 1, 2, ...
         ind[i] = i;
     }
 
     for (i = 0; i < N * 5; i++)
-    { // Barajamos los elementos del vector. Recorremos multiples veces el vector, haciendo intercambios de forma aleatoria
+    { // Barajamos los elementos del vector. Recorremos multiples veces el vector, haciendo intercambios de forma aleatoria.
         swap_i = rand() % N;
         swap = ind[i % N];
         ind[i % N] = ind[swap_i];
@@ -190,6 +184,7 @@ int main(int argc, char **argv)
 
     start_counter(); // Iniciamos el contador
 
+    // Para ahorrarnos tener que restarle c a cada columna de B a la hora de hacer los calculos, realizamos antes la computacion de esta parte.
     for (i = 0; i < N; i += 2)
     {
         lineaB = bTrasp[i];
@@ -212,16 +207,17 @@ int main(int argc, char **argv)
         lineaB2[7] -= c[7];
     }
 
+    // Realizamos la computacion principal. La hacemos por bloques para que la parte de la matriz con la que estamos trabajando quepa en la cache.
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
     {
-        i_max = block_a + BLOCK_SIZE;
+        i_max = block_a + BLOCK_SIZE; // i_max = min(block_a + BLOCK_SIZE, N)
         if (i_max > N)
         {
             i_max = N;
         }
         for (block_b = 0; block_b < N; block_b += BLOCK_SIZE) // Bloque de la matriz B
         {
-            j_max = block_b + BLOCK_SIZE;
+            j_max = block_b + BLOCK_SIZE; // j_max = min(block_b + BLOCK_SIZE, N)
             if (j_max > N)
             {
                 j_max = N;
@@ -230,30 +226,28 @@ int main(int argc, char **argv)
             {
                 for (j = block_b; j < j_max; j += 2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
-                    lineaA = a[i];
+                    lineaA = a[i]; // Guardando a[i] en el stack nos ahorramos tener que calcularlo cada vez que hacemos referencia a la linea
                     lineaB = bTrasp[j];
                     lineaB2 = bTrasp[j + 1];
-                    elem1 = 0;
-                    elem2 = 0;
-                    elem1 += lineaA[0] * lineaB[0];
+                    elem1 = lineaA[0] * lineaB[0]; // Podriamos inicializar antes a 0, y poner esto como la suma, pero entonces tendriamos una potencial dependencia RAW.
+                    elem2 = lineaA[0] * lineaB2[0]; // Intercalamos las operaciones entre elem1 y elem2 para reducir la magnitud de las dependencias RAW.
                     elem1 += lineaA[1] * lineaB[1];
-                    elem1 += lineaA[2] * lineaB[2];
-                    elem1 += lineaA[3] * lineaB[3];
-                    elem1 += lineaA[4] * lineaB[4];
-                    elem1 += lineaA[5] * lineaB[5];
-                    elem1 += lineaA[6] * lineaB[6];
-                    elem1 += lineaA[7] * lineaB[7];
-                    elem1 *= 2;
-                    d[i][j] = elem1;
-                    elem2 += lineaA[0] * lineaB2[0];
                     elem2 += lineaA[1] * lineaB2[1];
+                    elem1 += lineaA[2] * lineaB[2];
                     elem2 += lineaA[2] * lineaB2[2];
+                    elem1 += lineaA[3] * lineaB[3];
                     elem2 += lineaA[3] * lineaB2[3];
+                    elem1 += lineaA[4] * lineaB[4];
                     elem2 += lineaA[4] * lineaB2[4];
+                    elem1 += lineaA[5] * lineaB[5];
                     elem2 += lineaA[5] * lineaB2[5];
+                    elem1 += lineaA[6] * lineaB[6];
                     elem2 += lineaA[6] * lineaB2[6];
+                    elem1 += lineaA[7] * lineaB[7];
                     elem2 += lineaA[7] * lineaB2[7];
+                    elem1 *= 2;
                     elem2 *= 2;
+                    d[i][j] = elem1;
                     d[i][j + 1] = elem2;
                 }
             }
