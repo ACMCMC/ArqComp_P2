@@ -237,6 +237,8 @@ int main(int argc, char **argv)
                     elem1 += lineaA[5] * lineaB[5];
                     elem1 += lineaA[6] * lineaB[6];
                     elem1 += lineaA[7] * lineaB[7];
+                    elem1 *= 2;
+                    d[i][j] = elem1;
                     elem2 = lineaA[0] * lineaB2[0]; // Intercalamos las operaciones entre elem1 y elem2 para reducir la magnitud de las dependencias RAW.
                     elem2 += lineaA[1] * lineaB2[1];
                     elem2 += lineaA[2] * lineaB2[2];
@@ -245,8 +247,6 @@ int main(int argc, char **argv)
                     elem2 += lineaA[5] * lineaB2[5];
                     elem2 += lineaA[6] * lineaB2[6];
                     elem2 += lineaA[7] * lineaB2[7];
-                    elem1 *= 2;
-                    d[i][j] = elem1;
                     elem2 *= 2;
                     d[i][j + 1] = elem2;
                 }
