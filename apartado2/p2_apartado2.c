@@ -46,6 +46,7 @@ double get_counter()
     return result;
 }
 
+// Funcion auxiliar que imprime los contenidos de una matriz. No se usa en el codigo.
 void _printMat(double **m, int filas, int cols)
 {
     for (int i = 0; i < filas; i++)
@@ -60,6 +61,7 @@ void _printMat(double **m, int filas, int cols)
     printf("\n");
 }
 
+// Anade el tiempo de ejecucion al archivo CSV
 void escribir_resultado(int id_prueba, int N, double tiempo)
 {
     FILE *fp;
@@ -184,6 +186,10 @@ int main(int argc, char **argv)
 
     start_counter(); // Iniciamos el contador
 
+    //===========================================================
+    //                        CALCULOS
+    //===========================================================
+
     // Para ahorrarnos tener que restarle c a cada columna de B a la hora de hacer los calculos, realizamos antes la computacion de esta parte.
     for (i = 0; i < N; i += 2)
     {
@@ -237,7 +243,7 @@ int main(int argc, char **argv)
                     elem1 += lineaA[5] * lineaB[5];
                     elem1 += lineaA[6] * lineaB[6];
                     elem1 += lineaA[7] * lineaB[7];
-                    elem2 = lineaA[0] * lineaB2[0]; // Intercalamos las operaciones entre elem1 y elem2 para reducir la magnitud de las dependencias RAW.
+                    elem2 = lineaA[0] * lineaB2[0]; // Ahora trabajamos con elem2
                     elem2 += lineaA[1] * lineaB2[1];
                     elem2 += lineaA[2] * lineaB2[2];
                     elem2 += lineaA[3] * lineaB2[3];
@@ -245,16 +251,16 @@ int main(int argc, char **argv)
                     elem2 += lineaA[5] * lineaB2[5];
                     elem2 += lineaA[6] * lineaB2[6];
                     elem2 += lineaA[7] * lineaB2[7];
-                    elem1 *= 2;
-                    d[i][j] = elem1;
+                    elem1 *= 2; // Hacemos las multiplicaciones intercaladamente para que pase más tiempo entre la multiplicación y el store
                     elem2 *= 2;
+                    d[i][j] = elem1; // Guardamos el valor en la matriz
                     d[i][j + 1] = elem2;
                 }
             }
         }
     }
 
-    for (i = 0; i < N; i += 10)
+    for (i = 0; i < N; i += 10) // Usamos incrementos de 10, para hacer unrolling
     {
         e[i] = d[ind[i]][ind[i]] / 2;
         f += e[i];
@@ -287,16 +293,20 @@ int main(int argc, char **argv)
         f += e[i + 9];
     }
 
+    //===========================================================
+    //                    FIN DE LOS CALCULOS
+    //===========================================================
+
     tiempo = get_counter();
 
     printf("Valor de f: %f\n\n", f);
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
 
+    // Liberamos memoria
     liberarMatriz(a, N);
     liberarMatriz(bTrasp, N);
     liberarMatriz(d, N);
-
     free(c);
     free(e);
     free(ind);
