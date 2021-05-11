@@ -159,8 +159,8 @@ int main(int argc, char **argv)
 
     srand(clock());
 
-    a = reservarMatriz(N, NUM_COLS, getElementoAleatorio);
-    b = reservarMatriz(NUM_COLS, N, getElementoAleatorio);
+    a = reservarMatriz(N, NUM_COLS, gen1);
+    b = reservarMatriz(NUM_COLS, N, gen2);
     d = reservarMatriz(N, N, gen0);
     e = _mm_malloc(sizeof(double) * N, ALINEAMIENTO);
     ind = _mm_malloc(sizeof(int) * N, ALINEAMIENTO);
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = getElementoAleatorio();
+        c[i] = 1;
     }
 
     bTrasp = matTraspuesta(b, NUM_COLS, N);
@@ -196,38 +196,20 @@ int main(int argc, char **argv)
 
     start_counter(); // Iniciamos el contador
 
-    for (i = 0; i < N; i += 2)
+    for (j = 0; j < NUM_COLS; j += 2)
     {
-        lineaB = bTrasp[i];
-        lineaB2 = bTrasp[i + 1];
-        reg1 = _mm_load_pd(lineaB);
-        reg2 = _mm_load_pd(lineaB2);
-        reg3 = _mm_load_pd(c);
-        regResult = _mm_sub_pd(reg1, reg3);
-        regResult2 = _mm_sub_pd(reg2, reg3);
-        _mm_store_pd(lineaB, regResult);
-        _mm_store_pd(lineaB2, regResult2);
-        reg1 = _mm_load_pd(lineaB + 2);
-        reg2 = _mm_load_pd(lineaB2 + 2);
-        reg3 = _mm_load_pd(c + 2);
-        regResult = _mm_sub_pd(reg1, reg3);
-        regResult2 = _mm_sub_pd(reg2, reg3);
-        _mm_store_pd(lineaB + 2, regResult);
-        _mm_store_pd(lineaB2 + 2, regResult2);
-        reg1 = _mm_load_pd(lineaB + 4);
-        reg2 = _mm_load_pd(lineaB2 + 4);
-        reg3 = _mm_load_pd(c + 4);
-        regResult = _mm_sub_pd(reg1, reg3);
-        regResult2 = _mm_sub_pd(reg2, reg3);
-        _mm_store_pd(lineaB + 4, regResult);
-        _mm_store_pd(lineaB2 + 4, regResult2);
-        reg1 = _mm_load_pd(lineaB + 6);
-        reg2 = _mm_load_pd(lineaB2 + 6);
-        reg3 = _mm_load_pd(c + 6);
-        regResult = _mm_sub_pd(reg1, reg3);
-        regResult2 = _mm_sub_pd(reg2, reg3);
-        _mm_store_pd(lineaB + 6, regResult);
-        _mm_store_pd(lineaB2 + 6, regResult2);
+        reg3 = _mm_load_pd(c + j);
+        for (i = 0; i < N; i += 2)
+        {
+            lineaB = &bTrasp[i][j];
+            lineaB2 = &bTrasp[i + 1][j];
+            reg1 = _mm_load_pd(lineaB);
+            reg2 = _mm_load_pd(lineaB2);
+            regResult = _mm_sub_pd(reg1, reg3);
+            regResult2 = _mm_sub_pd(reg2, reg3);
+            _mm_store_pd(lineaB, regResult);
+            _mm_store_pd(lineaB2, regResult2);
+        }
     }
 
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
