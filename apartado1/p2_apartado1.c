@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         a[i] = malloc(sizeof(double) * NUM_COLS);
         for (j = 0; j < NUM_COLS; j++)
         {
-            a[i][j] = 1;
+            a[i][j] = getElementoAleatorio();
         }
     }
 
@@ -111,14 +111,14 @@ int main(int argc, char **argv)
         b[i] = malloc(sizeof(double) * N);
         for (j = 0; j < N; j++)
         {
-            b[i][j] = 2;
+            b[i][j] = getElementoAleatorio();
         }
     }
 
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = 1;
+        c[i] = getElementoAleatorio();
     }
 
     // Reservamos memoria para las filas de D e inicializamos a 0 sus elementos
