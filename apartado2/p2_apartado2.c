@@ -174,6 +174,17 @@ int main(int argc, char **argv)
         c[i] = 1;
     }
 
+    a[2][4] = 500;
+a[3][3] = 343;
+b[2][1] = 32;
+b[3][1] = 22;
+b[2][4] = 321;
+b[5][5] = 324;
+b[1][1] = 37;
+c[2] = 5;
+c[3] = 6;
+c[6] = 8;
+
     // Trasponemos B. Entendemos que esto es parte del la configuracion previa, asi que no lo incluimos en el tiempo de computacion.
     bTrasp = matTraspuesta(b, NUM_COLS, N);
     liberarMatriz(b, NUM_COLS);

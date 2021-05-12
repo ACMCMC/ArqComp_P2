@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         a[i] = malloc(sizeof(double) * NUM_COLS);
         for (j = 0; j < NUM_COLS; j++)
         {
-            a[i][j] = getElementoAleatorio();
+            a[i][j] = 1;
         }
     }
 
@@ -111,14 +111,14 @@ int main(int argc, char **argv)
         b[i] = malloc(sizeof(double) * N);
         for (j = 0; j < N; j++)
         {
-            b[i][j] = getElementoAleatorio();
+            b[i][j] = 2;
         }
     }
 
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = getElementoAleatorio();
+        c[i] = 1;
     }
 
     // Reservamos memoria para las filas de D e inicializamos a 0 sus elementos
@@ -146,6 +146,17 @@ int main(int argc, char **argv)
     }
 
     f = 0;
+
+    a[2][4] = 500;
+a[3][3] = 343;
+b[2][1] = 32;
+b[3][1] = 22;
+b[2][4] = 321;
+b[5][5] = 324;
+b[1][1] = 37;
+c[2] = 5;
+c[3] = 6;
+c[6] = 8;
 
     start_counter(); // Iniciamos el contador
 

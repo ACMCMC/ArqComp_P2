@@ -157,8 +157,8 @@ int main(int argc, char **argv)
 
     srand(clock());
 
-    a = reservarMatriz(N, NUM_COLS, getElementoAleatorio);
-    b = reservarMatriz(NUM_COLS, N, getElementoAleatorio);
+    a = reservarMatriz(N, NUM_COLS, gen1);
+    b = reservarMatriz(NUM_COLS, N, gen2);
     d = reservarMatriz(N, N, gen0);
     e = malloc(sizeof(double) * N);
     ind = malloc(sizeof(int) * N);
@@ -167,8 +167,19 @@ int main(int argc, char **argv)
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = getElementoAleatorio();
+        c[i] = gen1();
     }
+
+a[2][4] = 500;
+a[3][3] = 343;
+b[2][1] = 32;
+b[3][1] = 22;
+b[2][4] = 321;
+b[5][5] = 324;
+b[1][1] = 37;
+c[2] = 5;
+c[3] = 6;
+c[6] = 8;
 
     bTrasp = matTraspuesta(b, NUM_COLS, N);
     liberarMatriz(b, NUM_COLS);
