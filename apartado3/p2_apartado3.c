@@ -196,6 +196,10 @@ int main(int argc, char **argv)
 
     start_counter(); // Iniciamos el contador
 
+    //===========================================================
+    //                        CALCULOS
+    //==========================================================
+
     // Para ahorrarnos tener que restarle c a cada columna de B a la hora de hacer los calculos, realizamos antes la computacion de esta parte.
     for (j = 0; j < NUM_COLS; j += 2)
     {
@@ -428,6 +432,10 @@ int main(int argc, char **argv)
     }
     _mm_store_pd(vectorReduccion, regResult);
     f = (vectorReduccion[0] + vectorReduccion[1]);
+
+    //===========================================================
+    //                    FIN DE LOS CALCULOS
+    //===========================================================
 
     tiempo = get_counter();
 

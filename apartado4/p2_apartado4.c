@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 {
     unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
     double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
-    double elem0, elem1, elem2, elem3, elem4, elem5, elem6, elem7, elem8, elem9, *lineaA, *lineaB0, *lineaB1, *lineaB2, *lineaB3, *lineaB4, *lineaB5, *lineaB6, *lineaB7, *lineaB8, *lineaB9, elemA, elemA2, elemReduccion;
+    double elem0, elem1, elem2, elem3, elem4, elem5, elem6, elem7, elem8, elem9, *lineaA, *lineaB0, *lineaB1, *lineaB2, *lineaB3, *lineaB4, *lineaB5, *lineaB6, *lineaB7, *lineaB8, *lineaB9, elemA, elemA2, acumulador;
 
     if (argc != 3)
     {
@@ -190,6 +190,10 @@ int main(int argc, char **argv)
     f = 0;
 
     start_counter(); // Iniciamos el contador
+
+    //===========================================================
+    //                        CALCULOS
+    //==========================================================
 
     // Para ahorrarnos tener que restarle c a cada columna de B a la hora de hacer los calculos, realizamos antes la computacion de esta parte.
     #pragma omp parallel private(i,lineaB0,lineaB1)
@@ -367,42 +371,46 @@ int main(int argc, char **argv)
     #pragma omp for
     for (i = 0; i < N; i += 10)
     {
-	    elemReduccion = 0;
+	    acumulador = 0;
         e[i] = d[ind[i]][ind[i]] / 2;
-        elemReduccion += e[i];
+        acumulador += e[i];
 
         e[i + 1] = d[ind[i + 1]][ind[i + 1]] / 2;
-        elemReduccion += e[i+1];
+        acumulador += e[i+1];
 
         e[i + 2] = d[ind[i + 2]][ind[i + 2]] / 2;
-        elemReduccion += e[i+2];
+        acumulador += e[i+2];
 
         e[i + 3] = d[ind[i + 3]][ind[i + 3]] / 2;
-        elemReduccion += e[i+3];
+        acumulador += e[i+3];
 
         e[i + 4] = d[ind[i + 4]][ind[i + 4]] / 2;
-        elemReduccion += e[i+4];
+        acumulador += e[i+4];
 
         e[i + 5] = d[ind[i + 5]][ind[i + 5]] / 2;
-        elemReduccion += e[i+5];
+        acumulador += e[i+5];
 
         e[i + 6] = d[ind[i + 6]][ind[i + 6]] / 2;
-        elemReduccion += e[i+6];
+        acumulador += e[i+6];
 
         e[i + 7] = d[ind[i + 7]][ind[i + 7]] / 2;
-        elemReduccion += e[i+7];
+        acumulador += e[i+7];
 
         e[i + 8] = d[ind[i + 8]][ind[i + 8]] / 2;
-        elemReduccion += e[i+8];
+        acumulador += e[i+8];
 
         e[i + 9] = d[ind[i + 9]][ind[i + 9]] / 2;
-        elemReduccion += e[i+9];
+        acumulador += e[i+9];
 	
         #pragma omp atomic
-	    f+=elemReduccion;
+	    f+=acumulador;
     }
 
     }
+
+    //===========================================================
+    //                    FIN DE LOS CALCULOS
+    //===========================================================
 
     tiempo = get_counter();
 
