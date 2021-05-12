@@ -67,9 +67,58 @@ void escribir_resultado(int id_prueba, int N, double tiempo)
     }
 }
 
+// Función que devuelve un 0
+double gen0()
+{
+    return 0;
+}
+// Función que devuelve un 1
+double gen1()
+{
+    return 1;
+}
+// Función que devuelve un 2
+double gen2()
+{
+    return 2;
+}
+
+// Función que devuelve un número aleatorio entre 0 y 1
 double getElementoAleatorio()
 {
     return ((double)rand() / RAND_MAX);
+}
+
+// Se encarga de reservar las filas de la matriz y el vector que apunta a las filas. Además usa la función parámetro para generar los elementos de la matriz.
+double **reservarMatriz(int filas, int cols, double(fun)())
+{
+    int i, j;
+    double **mat;
+
+    mat = malloc(sizeof(double) * filas);
+
+    for (i = 0; i < filas; i++)
+    {
+        mat[i] = malloc(sizeof(double) * cols);
+        for (j = 0; j < cols; j++)
+        {
+            mat[i][j] = fun();
+        }
+    }
+
+    return mat;
+}
+
+// Se encarga de liberar una matriz. No necesita conocer el número de columnas, ya que llega con liberar las filas y el vector de punteros a las filas.
+void liberarMatriz(double **mat, int filas)
+{
+    int i;
+    for (i = 0; i < filas; i++)
+    {
+        free(mat[i]);
+    }
+
+    free(mat);
 }
 
 int main(int argc, char **argv)
@@ -88,47 +137,17 @@ int main(int argc, char **argv)
 
     srand(clock());
 
-    a = malloc(sizeof(double *) * N);        // Reservamos memoria para los punteros a las filas de A
-    b = malloc(sizeof(double *) * NUM_COLS); // Reservamos memoria para los punteros a las filas de B
+    a = reservarMatriz(N, NUM_COLS, getElementoAleatorio);
+    b = reservarMatriz(NUM_COLS, N, getElementoAleatorio);
+    d = reservarMatriz(N, N, gen0);
     c = malloc(sizeof(double) * NUM_COLS);   // Reservamos memoria para C
-    d = malloc(sizeof(double *) * N);        // Reservamos memoria para los punteros a las filas de D
     e = malloc(sizeof(double) * N);
     ind = malloc(sizeof(int) * N);
-
-    // Reservamos memoria para las filas de A e inicializamos a valores aleatorios cada elemento
-    for (i = 0; i < N; i++)
-    {
-        a[i] = malloc(sizeof(double) * NUM_COLS);
-        for (j = 0; j < NUM_COLS; j++)
-        {
-            a[i][j] = 1;
-        }
-    }
-
-    // Reservamos memoria para las filas de B e inicializamos a valores aleatorios cada elemento
-    for (i = 0; i < NUM_COLS; i++)
-    {
-        b[i] = malloc(sizeof(double) * N);
-        for (j = 0; j < N; j++)
-        {
-            b[i][j] = 2;
-        }
-    }
 
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = 1;
-    }
-
-    // Reservamos memoria para las filas de D e inicializamos a 0 sus elementos
-    for (i = 0; i < N; i++)
-    {
-        d[i] = malloc(sizeof(double) * N);
-        for (j = 0; j < N; j++)
-        {
-            d[i][j] = 0;
-        }
+        c[i] = getElementoAleatorio();
     }
 
     // Entendemos que la inicialización del vector no entra dentro del tiempo de computación
@@ -146,17 +165,6 @@ int main(int argc, char **argv)
     }
 
     f = 0;
-
-    a[2][4] = 500;
-a[3][3] = 343;
-b[2][1] = 32;
-b[3][1] = 22;
-b[2][4] = 321;
-b[5][5] = 324;
-b[1][1] = 37;
-c[2] = 5;
-c[3] = 6;
-c[6] = 8;
 
     start_counter(); // Iniciamos el contador
 
@@ -184,20 +192,11 @@ c[6] = 8;
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
 
-    for (i = 0; i < N; i++)
-    {
-        free(a[i]);
-        free(d[i]);
-    }
-    for (i = 0; i < NUM_COLS; i++)
-    {
-        free(b[i]);
-    }
-    
-    free(a);
-    free(b);
+    // Liberamos memoria
+    liberarMatriz(a, N);
+    liberarMatriz(b, NUM_COLS);
+    liberarMatriz(d, N);
     free(c);
-    free(d);
     free(e);
     free(ind);
 

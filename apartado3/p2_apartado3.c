@@ -172,17 +172,6 @@ int main(int argc, char **argv)
         c[i] = 1;
     }
 
-    a[2][4] = 500;
-a[3][3] = 343;
-b[2][1] = 32;
-b[3][1] = 22;
-b[2][4] = 321;
-b[5][5] = 324;
-b[1][1] = 37;
-c[2] = 5;
-c[3] = 6;
-c[6] = 8;
-
     bTrasp = matTraspuesta(b, NUM_COLS, N);
     liberarMatriz(b, NUM_COLS);
 
@@ -448,10 +437,10 @@ c[6] = 8;
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
 
+    // Liberamos memoria
     liberarMatriz(a, N);
     liberarMatriz(bTrasp, N);
     liberarMatriz(d, N);
-
     _mm_free(c);
     _mm_free(e);
     _mm_free(ind);

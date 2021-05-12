@@ -419,13 +419,13 @@ c[6] = 8;
 
     escribir_resultado(id_prueba, N, tiempo); // Escribimos los resultados en el archivo CSV
 
+    // Liberamos memoria
     liberarMatriz(a, N);
     liberarMatriz(bTrasp, N);
     liberarMatriz(d, N);
-
     free(c);
     free(e);
     free(ind);
-
+    
     exit(EXIT_SUCCESS);
 }
