@@ -212,14 +212,14 @@ c[6] = 8;
         reg3 = _mm_load_pd(c + j);
         for (i = 0; i < N; i += 2)
         {
-            lineaB = &bTrasp[i][j];
-            lineaB2 = &bTrasp[i + 1][j];
-            reg1 = _mm_load_pd(lineaB);
-            reg2 = _mm_load_pd(lineaB2);
+            lineaB0 = &bTrasp[i][j];
+            lineaB1 = &bTrasp[i + 1][j];
+            reg1 = _mm_load_pd(lineaB0);
+            reg2 = _mm_load_pd(lineaB1);
             regResult = _mm_sub_pd(reg1, reg3);
             regResult2 = _mm_sub_pd(reg2, reg3);
-            _mm_store_pd(lineaB, regResult);
-            _mm_store_pd(lineaB2, regResult2);
+            _mm_store_pd(lineaB0, regResult);
+            _mm_store_pd(lineaB1, regResult2);
         }
     }
 

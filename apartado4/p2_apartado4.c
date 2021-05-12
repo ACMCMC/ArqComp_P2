@@ -250,7 +250,7 @@ c[6] = 8;
             }
             for (i = block_a; i < i_max; i++) // Recorremos el bloque de la matriz A
             {
-                for (j = block_b; j < j_max; j += 2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
+                for (j = block_b; j < j_max; j += 10) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
                     lineaA = a[i]; // Guardando a[i] en el stack nos ahorramos tener que calcularlo cada vez que hacemos referencia a la linea
                     elemA = lineaA[0]; // Cargamos el primer elemento que vamos a usar en memoria adelantadamente
