@@ -254,20 +254,6 @@ int main(int argc, char **argv)
                     lineaB8 = bTrasp[j + 8];
                     lineaB9 = bTrasp[j + 9];
 
-                    /*for (int x = 0; x < 10; x++) {
-                        elemA = lineaA[x];
-                    elem0 = elemA * lineaB0[x]; // Podriamos inicializar antes a 0, y poner esto como la suma, pero entonces tendriamos una potencial dependencia RAW.
-                    elem1 = elemA * lineaB1[x];
-                    elem2 = elemA * lineaB2[x];
-                    elem3 = elemA * lineaB3[x];
-                    elem4 = elemA * lineaB4[x];
-                    elem5 = elemA * lineaB5[x];
-                    elem6 = elemA * lineaB6[x];
-                    elem7 = elemA * lineaB7[x];
-                    elem8 = elemA * lineaB8[x];
-                    elem9 = elemA * lineaB9[x];
-                    }*/
-
                     elemA = lineaA[0];
                     elem0 = elemA * lineaB0[0]; // Podriamos inicializar antes a 0, y poner esto como la suma, pero entonces tendriamos una potencial dependencia RAW.
                     elem1 = elemA * lineaB1[0];
@@ -356,28 +342,6 @@ int main(int argc, char **argv)
                     elem7 += elemA * lineaB7[7];
                     elem8 += elemA * lineaB8[7];
                     elem9 += elemA * lineaB9[7];
-                    elemA = lineaA[8];
-                    elem0 += elemA * lineaB0[8];
-                    elem1 += elemA * lineaB1[8];
-                    elem2 += elemA * lineaB2[8];
-                    elem3 += elemA * lineaB3[8];
-                    elem4 += elemA * lineaB4[8];
-                    elem5 += elemA * lineaB5[8];
-                    elem6 += elemA * lineaB6[8];
-                    elem7 += elemA * lineaB7[8];
-                    elem8 += elemA * lineaB8[8];
-                    elem9 += elemA * lineaB9[8];
-                    elemA = lineaA[9];
-                    elem0 += elemA * lineaB0[9];
-                    elem1 += elemA * lineaB1[9];
-                    elem2 += elemA * lineaB2[9];
-                    elem3 += elemA * lineaB3[9];
-                    elem4 += elemA * lineaB4[9];
-                    elem5 += elemA * lineaB5[9];
-                    elem6 += elemA * lineaB6[9];
-                    elem7 += elemA * lineaB7[9];
-                    elem8 += elemA * lineaB8[9];
-                    elem9 += elemA * lineaB9[9];
 
                     d[i][j] = elem0 * 2; // Guardamos el valor en la matriz
                     d[i][j + 1] = elem1 * 2;
