@@ -196,6 +196,7 @@ int main(int argc, char **argv)
 
     start_counter(); // Iniciamos el contador
 
+    // Para ahorrarnos tener que restarle c a cada columna de B a la hora de hacer los calculos, realizamos antes la computacion de esta parte.
     for (j = 0; j < NUM_COLS; j += 2)
     {
         reg3 = _mm_load_pd(c + j);
@@ -212,6 +213,7 @@ int main(int argc, char **argv)
         }
     }
 
+    // Realizamos la computacion principal. La hacemos por bloques para que la parte de la matriz con la que estamos trabajando quepa en la cache.
     for (block_a = 0; block_a < N; block_a += BLOCK_SIZE) // Bloque de la matriz A
     {
         i_max = block_a + BLOCK_SIZE;
@@ -242,10 +244,7 @@ int main(int argc, char **argv)
                     lineaB8 = bTrasp[j + 8];
                     lineaB9 = bTrasp[j + 9];
 
-                    /*
-                        Para que el codigo sea mas rapido, vamos a usar un registro donde ir acumulando resultados (regResultX_2), y uno donde ir calculando las multiplicaciones que sumaremos en ese registro (regResultX_1).
-                    */
-
+                    //Para que el codigo sea mas rapido, vamos a usar un registro donde ir acumulando resultados (regResultX_2), y uno donde ir calculando las multiplicaciones que sumaremos en ese registro (regResultX_1).
                     regA = _mm_load_pd(lineaA);  // reg1 = (a[i][0] , a[i][1])
                     reg0 = _mm_load_pd(lineaB0); // reg0 = (b[j][0] , b[j][1])
                     reg1 = _mm_load_pd(lineaB1); // ...
@@ -259,17 +258,16 @@ int main(int argc, char **argv)
                     reg9 = _mm_load_pd(lineaB9);
                     regResult0_2 = _mm_mul_pd(regA, reg0); // regResult0_2 = (a[i][0] * b[j][0] , a[i][1] * b[j][1]). En la primera iteracion del bucle usamos el registro regResult0_2, porque podemos inicializarlo al valor de la primera multiplicacion. Otra opcion seria inicializar regResult0_2 a (0 , 0), calcular el resultado de la multiplicacion en regResultX_1, y sumárselo a regResultX_2. Esto es lo que haremos a partir de aqui, pero en este caso no es necesario, ya que asumimos que regResultX_2 empieza en (0 , 0)
                     regResult1_2 = _mm_mul_pd(regA, reg1); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
-                    regResult2_2 = _mm_mul_pd(regA, reg2); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
-                    regResult3_2 = _mm_mul_pd(regA, reg3); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
-                    regResult4_2 = _mm_mul_pd(regA, reg4); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
-                    regResult5_2 = _mm_mul_pd(regA, reg5); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
-                    regResult6_2 = _mm_mul_pd(regA, reg6); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
-                    regResult7_2 = _mm_mul_pd(regA, reg7); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
-                    regResult8_2 = _mm_mul_pd(regA, reg8); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
-                    regResult9_2 = _mm_mul_pd(regA, reg9); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
+                    regResult2_2 = _mm_mul_pd(regA, reg2);
+                    regResult3_2 = _mm_mul_pd(regA, reg3);
+                    regResult4_2 = _mm_mul_pd(regA, reg4);
+                    regResult5_2 = _mm_mul_pd(regA, reg5);
+                    regResult6_2 = _mm_mul_pd(regA, reg6);
+                    regResult7_2 = _mm_mul_pd(regA, reg7);
+                    regResult8_2 = _mm_mul_pd(regA, reg8);
+                    regResult9_2 = _mm_mul_pd(regA, reg9);
 
                     // A partir de aqui, si que tendremos que usar regResultX_1 y regResultX_2
-
                     regA = _mm_load_pd(lineaA + 2);
                     reg0 = _mm_load_pd(lineaB0 + 2);
                     reg1 = _mm_load_pd(lineaB1 + 2);

@@ -170,17 +170,6 @@ int main(int argc, char **argv)
         c[i] = gen1();
     }
 
-a[2][4] = 500;
-a[3][3] = 343;
-b[2][1] = 32;
-b[3][1] = 22;
-b[2][4] = 321;
-b[5][5] = 324;
-b[1][1] = 37;
-c[2] = 5;
-c[3] = 6;
-c[6] = 8;
-
     bTrasp = matTraspuesta(b, NUM_COLS, N);
     liberarMatriz(b, NUM_COLS);
 
@@ -202,6 +191,7 @@ c[6] = 8;
 
     start_counter(); // Iniciamos el contador
 
+    // Para ahorrarnos tener que restarle c a cada columna de B a la hora de hacer los calculos, realizamos antes la computacion de esta parte.
     #pragma omp parallel private(i,lineaB0,lineaB1)
     {
 
@@ -230,6 +220,7 @@ c[6] = 8;
 
     }
 
+    // Realizamos la computacion principal. La hacemos por bloques para que la parte de la matriz con la que estamos trabajando quepa en la cache.
     #pragma omp parallel private(i_max,j_max,i,j,block_a,block_b,elemA,elemA2,elem0,elem1,elem2,elem3,elem4,elem5,elem6,elem7,elem8,elem9,lineaA,lineaB0,lineaB1,lineaB2,lineaB3,lineaB4,lineaB5,lineaB6,lineaB7,lineaB8,lineaB9)
     {
     
@@ -426,6 +417,6 @@ c[6] = 8;
     free(c);
     free(e);
     free(ind);
-    
+
     exit(EXIT_SUCCESS);
 }
