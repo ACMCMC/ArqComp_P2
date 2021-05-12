@@ -5,7 +5,7 @@
 
 #define NUM_COLS 8
 #define LINEA_CACHE 64
-#define BLOCK_SIZE 18
+#define BLOCK_SIZE 20
 #define ALINEAMIENTO 16
 
 static unsigned cyc_hi = 0;
