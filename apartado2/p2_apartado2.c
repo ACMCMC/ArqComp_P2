@@ -161,8 +161,8 @@ int main(int argc, char **argv)
     srand(clock()); // Semilla del generador aleatorio de números
 
     // Reservamos las matrices
-    a = reservarMatriz(N, NUM_COLS, gen1);
-    b = reservarMatriz(NUM_COLS, N, gen2);
+    a = reservarMatriz(N, NUM_COLS, getElementoAleatorio);
+    b = reservarMatriz(NUM_COLS, N, getElementoAleatorio);
     d = reservarMatriz(N, N, gen0);
     e = malloc(sizeof(double) * N);
     ind = malloc(sizeof(int) * N);
@@ -171,7 +171,7 @@ int main(int argc, char **argv)
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = 1;
+        c[i] = getElementoAleatorio();
     }
 
     a[2][4] = 500;
