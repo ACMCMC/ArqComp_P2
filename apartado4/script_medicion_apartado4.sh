@@ -1,4 +1,5 @@
 #!/bin/bash
+make clean # Compilamos
 make # Compilamos
 lista_n="250 500 750 1000 1500 2000 2550 3000" # Valores de C para probar
 lista_num_threads="1 2 4 6 8" # Valores de C para probar

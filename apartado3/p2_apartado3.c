@@ -143,10 +143,10 @@ double **matTraspuesta(double **mat, int filas, int cols)
 
 int main(int argc, char **argv)
 {
-    unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
+    unsigned int N, id_prueba, i, i_max, j, j_max, *ind, swap, swap_i, block_a, block_b;
     double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
-    double elem1, elem2, *lineaA, *lineaB0, *lineaB1, *lineaB2, *lineaB3, *lineaB4, *lineaB5, *lineaB6, *lineaB7, *lineaB8, *lineaB9, *vectorReduccion, *vectorAuxiliar;
-    __m128d regA, reg0, reg1, reg2, reg3, reg4, reg5, reg6, reg7, reg8, reg9, regResult, regResult0_1, regResult0_2, regResult1_1, regResult1_2, regResult2_1, regResult2_2, regResult3_1, regResult3_2, regResult4_1, regResult4_2, regResult5_1, regResult5_2, regResult6_1, regResult6_2, regResult7_1, regResult7_2, regResult8_1, regResult8_2, regResult9_1, regResult9_2, regResult2, regResult3, regResult4;
+    double *lineaA, *lineaB0, *lineaB1, *lineaB2, *lineaB3, *lineaB4, *lineaB5, *lineaB6, *lineaB7, *lineaB8, *lineaB9, *vectorReduccion, *vectorAuxiliar;
+    __m128d regA, reg0, reg1, reg2, reg3, reg4, reg5, reg6, reg7, reg8, reg9, regResult, regResult2, regResult0_1, regResult0_2, regResult1_1, regResult1_2, regResult2_1, regResult2_2, regResult3_1, regResult3_2, regResult4_1, regResult4_2, regResult5_1, regResult5_2, regResult6_1, regResult6_2, regResult7_1, regResult7_2, regResult8_1, regResult8_2, regResult9_1, regResult9_2;
 
     if (argc != 3)
     {

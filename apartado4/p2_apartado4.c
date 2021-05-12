@@ -142,7 +142,7 @@ double **matTraspuesta(double **mat, int filas, int cols)
 
 int main(int argc, char **argv)
 {
-    unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
+    unsigned int N, id_prueba, i, i_max, j, j_max, *ind, swap, swap_i, block_a, block_b;
     double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
     double elem0, elem1, elem2, elem3, elem4, elem5, elem6, elem7, elem8, elem9, *lineaA, *lineaB0, *lineaB1, *lineaB2, *lineaB3, *lineaB4, *lineaB5, *lineaB6, *lineaB7, *lineaB8, *lineaB9, elemA, elemA2, acumulador;
 

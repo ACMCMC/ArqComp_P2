@@ -1,4 +1,5 @@
 #!/bin/bash
+make clean # Compilamos
 make # Compilamos
 rm medidas_2.csv # Limpiamos el fichero de resultados
 echo 'ID_PRUEBA,N,T_TOTAL' > medidas_2.csv # Cabecera del fichero
