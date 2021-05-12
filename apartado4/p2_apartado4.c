@@ -365,7 +365,7 @@ int main(int argc, char **argv)
 
     }
 
-    #pragma omp parallel private(i,elemReduccion)
+    #pragma omp parallel private(i,acumulador)
     {
 
     #pragma omp for
