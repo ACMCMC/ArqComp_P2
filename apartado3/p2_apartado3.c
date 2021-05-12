@@ -145,8 +145,8 @@ int main(int argc, char **argv)
 {
     unsigned int N, id_prueba, i, i_max, j, j_max, k, *ind, swap, swap_i, block_a, block_b;
     double **a, **b, **bTrasp, *c, **d, *e, f, tiempo;
-    double elem1, elem2, *lineaA, *lineaB0, *lineaB1, *lineaB2, *lineaB3, *lineaB4, *lineaB5, *lineaB6, *lineaB7, *lineaB8, *lineaB9, *vectorReduccion, *vectorAuxiliar;
-    __m128d regA, reg0, reg1, reg2, reg3, reg4, reg5, reg6, reg7, reg8, reg9, regResult, regResult0_1, regResult0_2, regResult1_1, regResult1_2, regResult2_1, regResult2_2, regResult3_1, regResult3_2, regResult4_1, regResult4_2, regResult5_1, regResult5_2, regResult6_1, regResult6_2, regResult7_1, regResult7_2, regResult8_1, regResult8_2, regResult9_1, regResult9_2, regResult2, regResult3, regResult4;
+    double elem1, elem2, *lineaA, *lineaB0, *lineaB1, *lineaB2, *lineaB3, *lineaB4, *vectorReduccion, *vectorAuxiliar;
+    __m128d regA, reg0, reg1, reg2, reg3, reg4, regResult, regResult0_1, regResult0_2, regResult1_1, regResult1_2, regResult2_1, regResult2_2, regResult3_1, regResult3_2, regResult4_1, regResult4_2, regResult2, regResult3, regResult4;
 
     if (argc != 3)
     {
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
             }
             for (i = block_a; i < i_max; i++) // Recorremos el bloque de la matriz A
             {
-                for (j = block_b; j < j_max; j += 10) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
+                for (j = block_b; j < j_max; j += 5) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
                     lineaA = a[i];       // Guardando a[i] en el stack nos ahorramos tener que calcularlo cada vez que hacemos referencia a la linea
                     lineaB0 = bTrasp[j]; // La lógica de precalcular estas líneas es la misma que para lineaA
@@ -238,11 +238,6 @@ int main(int argc, char **argv)
                     lineaB2 = bTrasp[j + 2];
                     lineaB3 = bTrasp[j + 3];
                     lineaB4 = bTrasp[j + 4];
-                    lineaB5 = bTrasp[j + 5];
-                    lineaB6 = bTrasp[j + 6];
-                    lineaB7 = bTrasp[j + 7];
-                    lineaB8 = bTrasp[j + 8];
-                    lineaB9 = bTrasp[j + 9];
 
                     //Para que el codigo sea mas rapido, vamos a usar un registro donde ir acumulando resultados (regResultX_2), y uno donde ir calculando las multiplicaciones que sumaremos en ese registro (regResultX_1).
                     regA = _mm_load_pd(lineaA);  // reg1 = (a[i][0] , a[i][1])
@@ -251,21 +246,11 @@ int main(int argc, char **argv)
                     reg2 = _mm_load_pd(lineaB2);
                     reg3 = _mm_load_pd(lineaB3);
                     reg4 = _mm_load_pd(lineaB4);
-                    reg5 = _mm_load_pd(lineaB5);
-                    reg6 = _mm_load_pd(lineaB6);
-                    reg7 = _mm_load_pd(lineaB7);
-                    reg8 = _mm_load_pd(lineaB8);
-                    reg9 = _mm_load_pd(lineaB9);
                     regResult0_2 = _mm_mul_pd(regA, reg0); // regResult0_2 = (a[i][0] * b[j][0] , a[i][1] * b[j][1]). En la primera iteracion del bucle usamos el registro regResult0_2, porque podemos inicializarlo al valor de la primera multiplicacion. Otra opcion seria inicializar regResult0_2 a (0 , 0), calcular el resultado de la multiplicacion en regResultX_1, y sumárselo a regResultX_2. Esto es lo que haremos a partir de aqui, pero en este caso no es necesario, ya que asumimos que regResultX_2 empieza en (0 , 0)
                     regResult1_2 = _mm_mul_pd(regA, reg1); // regResult1_2 = (a[i][0] * b[j+1][0] , a[i][1] * b[j+1][1])
                     regResult2_2 = _mm_mul_pd(regA, reg2);
                     regResult3_2 = _mm_mul_pd(regA, reg3);
                     regResult4_2 = _mm_mul_pd(regA, reg4);
-                    regResult5_2 = _mm_mul_pd(regA, reg5);
-                    regResult6_2 = _mm_mul_pd(regA, reg6);
-                    regResult7_2 = _mm_mul_pd(regA, reg7);
-                    regResult8_2 = _mm_mul_pd(regA, reg8);
-                    regResult9_2 = _mm_mul_pd(regA, reg9);
 
                     // A partir de aqui, si que tendremos que usar regResultX_1 y regResultX_2
                     regA = _mm_load_pd(lineaA + 2);
@@ -274,31 +259,16 @@ int main(int argc, char **argv)
                     reg2 = _mm_load_pd(lineaB2 + 2);
                     reg3 = _mm_load_pd(lineaB3 + 2);
                     reg4 = _mm_load_pd(lineaB4 + 2);
-                    reg5 = _mm_load_pd(lineaB5 + 2);
-                    reg6 = _mm_load_pd(lineaB6 + 2);
-                    reg7 = _mm_load_pd(lineaB7 + 2);
-                    reg8 = _mm_load_pd(lineaB8 + 2);
-                    reg9 = _mm_load_pd(lineaB9 + 2);
                     regResult0_1 = _mm_mul_pd(regA, reg0); // regResult0_1 = (a[i][0] * b[j][0] , a[i][1] * b[j][1]).
                     regResult1_1 = _mm_mul_pd(regA, reg1);
                     regResult2_1 = _mm_mul_pd(regA, reg2);
                     regResult3_1 = _mm_mul_pd(regA, reg3);
                     regResult4_1 = _mm_mul_pd(regA, reg4);
-                    regResult5_1 = _mm_mul_pd(regA, reg5);
-                    regResult6_1 = _mm_mul_pd(regA, reg6);
-                    regResult7_1 = _mm_mul_pd(regA, reg7);
-                    regResult8_1 = _mm_mul_pd(regA, reg8);
-                    regResult9_1 = _mm_mul_pd(regA, reg9);
                     regResult0_2 = _mm_add_pd(regResult0_2, regResult0_1);
                     regResult1_2 = _mm_add_pd(regResult1_2, regResult1_1);
                     regResult2_2 = _mm_add_pd(regResult2_2, regResult2_1);
                     regResult3_2 = _mm_add_pd(regResult3_2, regResult3_1);
                     regResult4_2 = _mm_add_pd(regResult4_2, regResult4_1);
-                    regResult5_2 = _mm_add_pd(regResult5_2, regResult5_1);
-                    regResult6_2 = _mm_add_pd(regResult6_2, regResult6_1);
-                    regResult7_2 = _mm_add_pd(regResult7_2, regResult7_1);
-                    regResult8_2 = _mm_add_pd(regResult8_2, regResult8_1);
-                    regResult9_2 = _mm_add_pd(regResult9_2, regResult9_1);
 
                     regA = _mm_load_pd(lineaA + 4);
                     reg0 = _mm_load_pd(lineaB0 + 4);
@@ -306,31 +276,16 @@ int main(int argc, char **argv)
                     reg2 = _mm_load_pd(lineaB2 + 4);
                     reg3 = _mm_load_pd(lineaB3 + 4);
                     reg4 = _mm_load_pd(lineaB4 + 4);
-                    reg5 = _mm_load_pd(lineaB5 + 4);
-                    reg6 = _mm_load_pd(lineaB6 + 4);
-                    reg7 = _mm_load_pd(lineaB7 + 4);
-                    reg8 = _mm_load_pd(lineaB8 + 4);
-                    reg9 = _mm_load_pd(lineaB9 + 4);
                     regResult0_1 = _mm_mul_pd(regA, reg0); // regResult0_1 = (a[i][0] * b[j][0] , a[i][1] * b[j][1]).
                     regResult1_1 = _mm_mul_pd(regA, reg1);
                     regResult2_1 = _mm_mul_pd(regA, reg2);
                     regResult3_1 = _mm_mul_pd(regA, reg3);
                     regResult4_1 = _mm_mul_pd(regA, reg4);
-                    regResult5_1 = _mm_mul_pd(regA, reg5);
-                    regResult6_1 = _mm_mul_pd(regA, reg6);
-                    regResult7_1 = _mm_mul_pd(regA, reg7);
-                    regResult8_1 = _mm_mul_pd(regA, reg8);
-                    regResult9_1 = _mm_mul_pd(regA, reg9);
                     regResult0_2 = _mm_add_pd(regResult0_2, regResult0_1);
                     regResult1_2 = _mm_add_pd(regResult1_2, regResult1_1);
                     regResult2_2 = _mm_add_pd(regResult2_2, regResult2_1);
                     regResult3_2 = _mm_add_pd(regResult3_2, regResult3_1);
                     regResult4_2 = _mm_add_pd(regResult4_2, regResult4_1);
-                    regResult5_2 = _mm_add_pd(regResult5_2, regResult5_1);
-                    regResult6_2 = _mm_add_pd(regResult6_2, regResult6_1);
-                    regResult7_2 = _mm_add_pd(regResult7_2, regResult7_1);
-                    regResult8_2 = _mm_add_pd(regResult8_2, regResult8_1);
-                    regResult9_2 = _mm_add_pd(regResult9_2, regResult9_1);
 
                     regA = _mm_load_pd(lineaA + 6);
                     reg0 = _mm_load_pd(lineaB0 + 6);
@@ -338,31 +293,16 @@ int main(int argc, char **argv)
                     reg2 = _mm_load_pd(lineaB2 + 6);
                     reg3 = _mm_load_pd(lineaB3 + 6);
                     reg4 = _mm_load_pd(lineaB4 + 6);
-                    reg5 = _mm_load_pd(lineaB5 + 6);
-                    reg6 = _mm_load_pd(lineaB6 + 6);
-                    reg7 = _mm_load_pd(lineaB7 + 6);
-                    reg8 = _mm_load_pd(lineaB8 + 6);
-                    reg9 = _mm_load_pd(lineaB9 + 6);
                     regResult0_1 = _mm_mul_pd(regA, reg0); // regResult0_1 = (a[i][0] * b[j][0] , a[i][1] * b[j][1]).
                     regResult1_1 = _mm_mul_pd(regA, reg1);
                     regResult2_1 = _mm_mul_pd(regA, reg2);
                     regResult3_1 = _mm_mul_pd(regA, reg3);
                     regResult4_1 = _mm_mul_pd(regA, reg4);
-                    regResult5_1 = _mm_mul_pd(regA, reg5);
-                    regResult6_1 = _mm_mul_pd(regA, reg6);
-                    regResult7_1 = _mm_mul_pd(regA, reg7);
-                    regResult8_1 = _mm_mul_pd(regA, reg8);
-                    regResult9_1 = _mm_mul_pd(regA, reg9);
                     regResult0_2 = _mm_add_pd(regResult0_2, regResult0_1);
                     regResult1_2 = _mm_add_pd(regResult1_2, regResult1_1);
                     regResult2_2 = _mm_add_pd(regResult2_2, regResult2_1);
                     regResult3_2 = _mm_add_pd(regResult3_2, regResult3_1);
                     regResult4_2 = _mm_add_pd(regResult4_2, regResult4_1);
-                    regResult5_2 = _mm_add_pd(regResult5_2, regResult5_1);
-                    regResult6_2 = _mm_add_pd(regResult6_2, regResult6_1);
-                    regResult7_2 = _mm_add_pd(regResult7_2, regResult7_1);
-                    regResult8_2 = _mm_add_pd(regResult8_2, regResult8_1);
-                    regResult9_2 = _mm_add_pd(regResult9_2, regResult9_1);
 
                     _mm_store_pd(vectorReduccion, regResult0_2);             // Tenemos que sumar los dos elementos para que pasen a ser solamente 1, este paso no se puede hacer de forma vectorizada
                     d[i][j] = 2 * (vectorReduccion[0] + vectorReduccion[1]); // d[i][j] = ( regResult[0] + regResult[1] ) * 2
@@ -375,16 +315,6 @@ int main(int argc, char **argv)
                     d[i][j + 3] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
                     _mm_store_pd(vectorReduccion, regResult4_2);
                     d[i][j + 4] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
-                    _mm_store_pd(vectorReduccion, regResult5_2);
-                    d[i][j + 5] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
-                    _mm_store_pd(vectorReduccion, regResult6_2);
-                    d[i][j + 6] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
-                    _mm_store_pd(vectorReduccion, regResult7_2);
-                    d[i][j + 7] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
-                    _mm_store_pd(vectorReduccion, regResult8_2);
-                    d[i][j + 8] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
-                    _mm_store_pd(vectorReduccion, regResult9_2);
-                    d[i][j + 9] = 2 * (vectorReduccion[0] + vectorReduccion[1]);
                 }
             }
         }
