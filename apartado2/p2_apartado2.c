@@ -4,7 +4,7 @@
 
 #define NUM_COLS 8
 #define LINEA_CACHE 64
-#define BLOCK_SIZE 18
+#define BLOCK_SIZE 20
 
 static unsigned cyc_hi = 0;
 static unsigned cyc_lo = 0;
@@ -79,6 +79,16 @@ double gen0()
 {
     return 0;
 }
+// Función que devuelve un 1
+double gen1()
+{
+    return 1;
+}
+// Función que devuelve un 2
+double gen2()
+{
+    return 2;
+}
 
 // Función que devuelve un número aleatorio entre 0 y 1
 double getElementoAleatorio()
@@ -137,7 +147,7 @@ double **matTraspuesta(double **mat, int filas, int cols)
 int main(int argc, char **argv)
 {
     unsigned int N, id_prueba, i, i_max, j, j_max, *ind, swap, swap_i, block_a, block_b;
-    double **a, **b, **bTrasp, *c, **d, *e, f, tiempo, elem1, elem2, *lineaA, *lineaB, *lineaB2;
+    double **a, **b, **bTrasp, *c, **d, *e, f, tiempo, elem0, elem1, elem2, elem3, elem4, elem5, elem6, elem7, elem8, elem9, *lineaA, *lineaB0, *lineaB1, *lineaB2, *lineaB3, *lineaB4, *lineaB5, *lineaB6, *lineaB7, *lineaB8, *lineaB9, elemA;
 
     // Comprobamos los argumentos que pasamos al programa
     if (argc != 3)
@@ -151,8 +161,8 @@ int main(int argc, char **argv)
     srand(clock()); // Semilla del generador aleatorio de números
 
     // Reservamos las matrices
-    a = reservarMatriz(N, NUM_COLS, getElementoAleatorio);
-    b = reservarMatriz(NUM_COLS, N, getElementoAleatorio);
+    a = reservarMatriz(N, NUM_COLS, gen1);
+    b = reservarMatriz(NUM_COLS, N, gen2);
     d = reservarMatriz(N, N, gen0);
     e = malloc(sizeof(double) * N);
     ind = malloc(sizeof(int) * N);
@@ -161,7 +171,7 @@ int main(int argc, char **argv)
     // Inicializamos a valores aleatorios cada elemento de C
     for (i = 0; i < NUM_COLS; i++)
     {
-        c[i] = getElementoAleatorio();
+        c[i] = 1;
     }
 
     // Trasponemos B. Entendemos que esto es parte del la configuracion previa, asi que no lo incluimos en el tiempo de computacion.
@@ -193,24 +203,24 @@ int main(int argc, char **argv)
     // Para ahorrarnos tener que restarle c a cada columna de B a la hora de hacer los calculos, realizamos antes la computacion de esta parte.
     for (i = 0; i < N; i += 2)
     {
-        lineaB = bTrasp[i];
-        lineaB2 = bTrasp[i + 1];
-        lineaB[0] -= c[0];
-        lineaB[1] -= c[1];
-        lineaB[2] -= c[2];
-        lineaB[3] -= c[3];
-        lineaB[4] -= c[4];
-        lineaB[5] -= c[5];
-        lineaB[6] -= c[6];
-        lineaB[7] -= c[7];
-        lineaB2[0] -= c[0];
-        lineaB2[1] -= c[1];
-        lineaB2[2] -= c[2];
-        lineaB2[3] -= c[3];
-        lineaB2[4] -= c[4];
-        lineaB2[5] -= c[5];
-        lineaB2[6] -= c[6];
-        lineaB2[7] -= c[7];
+        lineaB0 = bTrasp[i];
+        lineaB1 = bTrasp[i + 1];
+        lineaB0[0] -= c[0];
+        lineaB0[1] -= c[1];
+        lineaB0[2] -= c[2];
+        lineaB0[3] -= c[3];
+        lineaB0[4] -= c[4];
+        lineaB0[5] -= c[5];
+        lineaB0[6] -= c[6];
+        lineaB0[7] -= c[7];
+        lineaB1[0] -= c[0];
+        lineaB1[1] -= c[1];
+        lineaB1[2] -= c[2];
+        lineaB1[3] -= c[3];
+        lineaB1[4] -= c[4];
+        lineaB1[5] -= c[5];
+        lineaB1[6] -= c[6];
+        lineaB1[7] -= c[7];
     }
 
     // Realizamos la computacion principal. La hacemos por bloques para que la parte de la matriz con la que estamos trabajando quepa en la cache.
@@ -230,31 +240,155 @@ int main(int argc, char **argv)
             }
             for (i = block_a; i < i_max; i++) // Recorremos el bloque de la matriz A
             {
-                for (j = block_b; j < j_max; j += 2) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
+                for (j = block_b; j < j_max; j += 10) // Recorremos el bloque de la matriz B, una vez por cada fila de A en el bloque
                 {
                     lineaA = a[i]; // Guardando a[i] en el stack nos ahorramos tener que calcularlo cada vez que hacemos referencia a la linea
-                    lineaB = bTrasp[j];
-                    lineaB2 = bTrasp[j + 1];
-                    elem1 = lineaA[0] * lineaB[0]; // Podriamos inicializar antes a 0, y poner esto como la suma, pero entonces tendriamos una potencial dependencia RAW.
-                    elem1 += lineaA[1] * lineaB[1];
-                    elem1 += lineaA[2] * lineaB[2];
-                    elem1 += lineaA[3] * lineaB[3];
-                    elem1 += lineaA[4] * lineaB[4];
-                    elem1 += lineaA[5] * lineaB[5];
-                    elem1 += lineaA[6] * lineaB[6];
-                    elem1 += lineaA[7] * lineaB[7];
-                    elem2 = lineaA[0] * lineaB2[0]; // Ahora trabajamos con elem2
-                    elem2 += lineaA[1] * lineaB2[1];
-                    elem2 += lineaA[2] * lineaB2[2];
-                    elem2 += lineaA[3] * lineaB2[3];
-                    elem2 += lineaA[4] * lineaB2[4];
-                    elem2 += lineaA[5] * lineaB2[5];
-                    elem2 += lineaA[6] * lineaB2[6];
-                    elem2 += lineaA[7] * lineaB2[7];
-                    elem1 *= 2; // Hacemos las multiplicaciones intercaladamente para que pase más tiempo entre la multiplicación y el store
-                    elem2 *= 2;
-                    d[i][j] = elem1; // Guardamos el valor en la matriz
-                    d[i][j + 1] = elem2;
+                    lineaB0 = bTrasp[j];
+                    lineaB1 = bTrasp[j + 1];
+                    lineaB2 = bTrasp[j + 2];
+                    lineaB3 = bTrasp[j + 3];
+                    lineaB4 = bTrasp[j + 4];
+                    lineaB5 = bTrasp[j + 5];
+                    lineaB6 = bTrasp[j + 6];
+                    lineaB7 = bTrasp[j + 7];
+                    lineaB8 = bTrasp[j + 8];
+                    lineaB9 = bTrasp[j + 9];
+
+                    /*for (int x = 0; x < 10; x++) {
+                        elemA = lineaA[x];
+                    elem0 = elemA * lineaB0[x]; // Podriamos inicializar antes a 0, y poner esto como la suma, pero entonces tendriamos una potencial dependencia RAW.
+                    elem1 = elemA * lineaB1[x];
+                    elem2 = elemA * lineaB2[x];
+                    elem3 = elemA * lineaB3[x];
+                    elem4 = elemA * lineaB4[x];
+                    elem5 = elemA * lineaB5[x];
+                    elem6 = elemA * lineaB6[x];
+                    elem7 = elemA * lineaB7[x];
+                    elem8 = elemA * lineaB8[x];
+                    elem9 = elemA * lineaB9[x];
+                    }*/
+
+                    elemA = lineaA[0];
+                    elem0 = elemA * lineaB0[0]; // Podriamos inicializar antes a 0, y poner esto como la suma, pero entonces tendriamos una potencial dependencia RAW.
+                    elem1 = elemA * lineaB1[0];
+                    elem2 = elemA * lineaB2[0];
+                    elem3 = elemA * lineaB3[0];
+                    elem4 = elemA * lineaB4[0];
+                    elem5 = elemA * lineaB5[0];
+                    elem6 = elemA * lineaB6[0];
+                    elem7 = elemA * lineaB7[0];
+                    elem8 = elemA * lineaB8[0];
+                    elem9 = elemA * lineaB9[0];
+                    elemA = lineaA[1];
+                    elem0 += elemA * lineaB0[1];
+                    elem1 += elemA * lineaB1[1];
+                    elem2 += elemA * lineaB2[1];
+                    elem3 += elemA * lineaB3[1];
+                    elem4 += elemA * lineaB4[1];
+                    elem5 += elemA * lineaB5[1];
+                    elem6 += elemA * lineaB6[1];
+                    elem7 += elemA * lineaB7[1];
+                    elem8 += elemA * lineaB8[1];
+                    elem9 += elemA * lineaB9[1];
+                    elemA = lineaA[2];
+                    elem0 += elemA * lineaB0[2];
+                    elem1 += elemA * lineaB1[2];
+                    elem2 += elemA * lineaB2[2];
+                    elem3 += elemA * lineaB3[2];
+                    elem4 += elemA * lineaB4[2];
+                    elem5 += elemA * lineaB5[2];
+                    elem6 += elemA * lineaB6[2];
+                    elem7 += elemA * lineaB7[2];
+                    elem8 += elemA * lineaB8[2];
+                    elem9 += elemA * lineaB9[2];
+                    elemA = lineaA[3];
+                    elem0 += elemA * lineaB0[3];
+                    elem1 += elemA * lineaB1[3];
+                    elem2 += elemA * lineaB2[3];
+                    elem3 += elemA * lineaB3[3];
+                    elem4 += elemA * lineaB4[3];
+                    elem5 += elemA * lineaB5[3];
+                    elem6 += elemA * lineaB6[3];
+                    elem7 += elemA * lineaB7[3];
+                    elem8 += elemA * lineaB8[3];
+                    elem9 += elemA * lineaB9[3];
+                    elemA = lineaA[4];
+                    elem0 += elemA * lineaB0[4];
+                    elem1 += elemA * lineaB1[4];
+                    elem2 += elemA * lineaB2[4];
+                    elem3 += elemA * lineaB3[4];
+                    elem4 += elemA * lineaB4[4];
+                    elem5 += elemA * lineaB5[4];
+                    elem6 += elemA * lineaB6[4];
+                    elem7 += elemA * lineaB7[4];
+                    elem8 += elemA * lineaB8[4];
+                    elem9 += elemA * lineaB9[4];
+                    elemA = lineaA[5];
+                    elem0 += elemA * lineaB0[5];
+                    elem1 += elemA * lineaB1[5];
+                    elem2 += elemA * lineaB2[5];
+                    elem3 += elemA * lineaB3[5];
+                    elem4 += elemA * lineaB4[5];
+                    elem5 += elemA * lineaB5[5];
+                    elem6 += elemA * lineaB6[5];
+                    elem7 += elemA * lineaB7[5];
+                    elem8 += elemA * lineaB8[5];
+                    elem9 += elemA * lineaB9[5];
+                    elemA = lineaA[6];
+                    elem0 += elemA * lineaB0[6];
+                    elem1 += elemA * lineaB1[6];
+                    elem2 += elemA * lineaB2[6];
+                    elem3 += elemA * lineaB3[6];
+                    elem4 += elemA * lineaB4[6];
+                    elem5 += elemA * lineaB5[6];
+                    elem6 += elemA * lineaB6[6];
+                    elem7 += elemA * lineaB7[6];
+                    elem8 += elemA * lineaB8[6];
+                    elem9 += elemA * lineaB9[6];
+                    elemA = lineaA[7];
+                    elem0 += elemA * lineaB0[7];
+                    elem1 += elemA * lineaB1[7];
+                    elem2 += elemA * lineaB2[7];
+                    elem3 += elemA * lineaB3[7];
+                    elem4 += elemA * lineaB4[7];
+                    elem5 += elemA * lineaB5[7];
+                    elem6 += elemA * lineaB6[7];
+                    elem7 += elemA * lineaB7[7];
+                    elem8 += elemA * lineaB8[7];
+                    elem9 += elemA * lineaB9[7];
+                    elemA = lineaA[8];
+                    elem0 += elemA * lineaB0[8];
+                    elem1 += elemA * lineaB1[8];
+                    elem2 += elemA * lineaB2[8];
+                    elem3 += elemA * lineaB3[8];
+                    elem4 += elemA * lineaB4[8];
+                    elem5 += elemA * lineaB5[8];
+                    elem6 += elemA * lineaB6[8];
+                    elem7 += elemA * lineaB7[8];
+                    elem8 += elemA * lineaB8[8];
+                    elem9 += elemA * lineaB9[8];
+                    elemA = lineaA[9];
+                    elem0 += elemA * lineaB0[9];
+                    elem1 += elemA * lineaB1[9];
+                    elem2 += elemA * lineaB2[9];
+                    elem3 += elemA * lineaB3[9];
+                    elem4 += elemA * lineaB4[9];
+                    elem5 += elemA * lineaB5[9];
+                    elem6 += elemA * lineaB6[9];
+                    elem7 += elemA * lineaB7[9];
+                    elem8 += elemA * lineaB8[9];
+                    elem9 += elemA * lineaB9[9];
+
+                    d[i][j] = elem0 * 2; // Guardamos el valor en la matriz
+                    d[i][j + 1] = elem1 * 2;
+                    d[i][j + 2] = elem2 * 2;
+                    d[i][j + 3] = elem3 * 2;
+                    d[i][j + 4] = elem4 * 2;
+                    d[i][j + 5] = elem5 * 2;
+                    d[i][j + 6] = elem6 * 2;
+                    d[i][j + 7] = elem7 * 2;
+                    d[i][j + 8] = elem8 * 2;
+                    d[i][j + 9] = elem9 * 2;
                 }
             }
         }
